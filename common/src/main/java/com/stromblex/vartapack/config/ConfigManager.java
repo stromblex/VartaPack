@@ -29,6 +29,7 @@ import java.util.List;
  */
 public final class ConfigManager {
     private static final String CONFIG_FILE = "vartapack.json";
+    private static final String LEGACY_CONFIG_FILE = "vartaconfig.json";
     private static final String PROFILE_FILE = "profile.json";
 
     private final Path configDir;
@@ -39,11 +40,13 @@ public final class ConfigManager {
 
     public Path configDir() { return configDir; }
     public Path vartaConfigPath() { return configDir.resolve(CONFIG_FILE); }
+    public Path legacyVartaConfigPath() { return configDir.resolve(LEGACY_CONFIG_FILE); }
     public Path packProfilePath() { return configDir.resolve(PROFILE_FILE); }
 
     public VartaConfig loadVartaConfig() {
         ensureDir();
         Path path = vartaConfigPath();
+        migrateLegacyConfigIfNeeded(path);
         if (!Files.exists(path)) {
             VartaConfig defaults = VartaConfig.defaults();
             writeVartaConfig(path, defaults);
@@ -62,6 +65,16 @@ public final class ConfigManager {
             writeVartaConfig(path, defaults);
             return defaults;
         }
+    }
+
+    public void saveVartaConfig(VartaConfig config) {
+        ensureDir();
+        writeVartaConfig(vartaConfigPath(), config);
+    }
+
+    public void savePackProfile(PackProfile profile) {
+        ensureDir();
+        writePackProfile(packProfilePath(), profile);
     }
 
     public PackProfile loadPackProfile() {
@@ -253,6 +266,18 @@ public final class ConfigManager {
             Files.createDirectories(configDir);
         } catch (IOException e) {
             VartaPack.LOGGER.error("Failed to create config dir {}", configDir, e);
+        }
+    }
+
+    private void migrateLegacyConfigIfNeeded(Path target) {
+        Path legacy = legacyVartaConfigPath();
+        if (Files.exists(target) || !Files.exists(legacy)) return;
+        try {
+            Files.move(legacy, target, StandardCopyOption.REPLACE_EXISTING);
+            VartaPack.LOGGER.info("Migrated legacy VartaPack config {} to {}", legacy, target);
+        } catch (IOException e) {
+            VartaPack.LOGGER.warn("Could not migrate legacy VartaPack config {} to {}: {}",
+                    legacy, target, e.getMessage());
         }
     }
 

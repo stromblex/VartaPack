@@ -8,10 +8,13 @@
 - **Blocked mods check** — detects forbidden/incompatible mods
 - **Recommended mods check** — suggests missing optional mods
 - **Extra mods check** — detects mods not in the modpack's allowed list
-- **Issues screen** — auto-opens on critical problems, shows severity + title + details for each issue
+- **Issues screen** — auto-opens on ERROR/CRITICAL problems, shows a compact severity summary and issue details
 - **Toast notification** — clickable popup on startup when issues are found, shows issue count and keybind
 - **Support report** — one-click generation, copies to clipboard, privacy-friendly (redacts paths/usernames)
 - **Configurable severity levels** — each check type can be set to INFO/WARNING/ERROR/CRITICAL
+- **In-game settings** — configure startup checks, report privacy, severity levels, and strict mode from the issues screen
+- **Profile wizard** — generate a baseline `profile.json` from the currently running instance
+- **Strict client gate** — when `strictMode` is enabled or `allowContinueAnyway` is disabled, ERROR/CRITICAL issues block closing the issues screen
 - **Privacy redaction** — removes OS username and home directory path from reports
 - **Keybind** — rebindable key to open issues screen (default: V), works on title screen and in-game
 - **Multi-loader** — single codebase for Fabric and NeoForge
@@ -68,9 +71,13 @@ Place in `config/vartapack/profile.json`:
 
 **ModRule fields:** `id` (mod ID), `name` (display name), `requiredVersion` (version constraint, optional), `reason` (explanation text, optional)
 
-### vartaconfig.json
+Supported `requiredVersion` forms include simple minimum versions (`"1.5.0"`), predicates (`">=1.2 <2.0"`), Maven/NeoForge-style ranges (`"[1.2,2.0)"`, `"[1.2,)"`), and caret/tilde ranges (`"^1.2.3"`, `"~1.2.3"`).
 
-Place in `config/vartapack/vartaconfig.json`:
+### vartapack.json
+
+Place in `config/vartapack/vartapack.json`:
+
+> Legacy note: older docs mentioned `vartaconfig.json`. If that file exists and `vartapack.json` does not, VartaPack migrates it automatically.
 
 ```json
 {
@@ -96,12 +103,12 @@ Place in `config/vartapack/vartaconfig.json`:
 | `enabled` | bool | `true` | Enable/disable all checks |
 | `showToastOnStartup` | bool | `true` | Show toast notification when issues found |
 | `showScreenOnCriticalIssues` | bool | `true` | Auto-open screen on ERROR/CRITICAL |
-| `allowContinueAnyway` | bool | `true` | Allow dismissing the issues screen |
+| `allowContinueAnyway` | bool | `true` | Allow dismissing the issues screen when ERROR/CRITICAL issues exist |
 | `includeInstalledModsInReport` | bool | `true` | Include full mod list in report |
 | `includeExtraModsInReport` | bool | `true` | Include extra mods in report |
 | `redactUserHomePath` | bool | `true` | Remove home path from report |
 | `redactUsername` | bool | `true` | Remove OS username from report |
-| `strictMode` | bool | `false` | Strict validation mode |
+| `strictMode` | bool | `false` | Treat extra mods as ERROR and block continue until ERROR/CRITICAL issues are fixed |
 | `extraModsSeverity` | string | `"INFO"` | Severity for unknown mods |
 | `requiredModsSeverity` | string | `"ERROR"` | Severity for missing required mods |
 | `blockedModsSeverity` | string | `"ERROR"` | Severity for blocked mods |
@@ -113,6 +120,12 @@ Severity levels: `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 
 - **V** — open issues screen (rebindable in controls)
 - **Click toast** — open issues screen
+- **Settings** — open the in-game VartaPack settings screen
+- **Profile Wizard** — create/update a baseline `profile.json` from the current instance
+
+## Enforcement Notes
+
+VartaPack currently provides a strict client-side gate. It can block closing the issues screen when the local profile has ERROR/CRITICAL issues, but it does not yet implement a server handshake that rejects clients during multiplayer login. If you need server-authoritative pack matching, pair VartaPack with a dedicated compatibility/checker mod or add a server-side handshake layer on top of the same `packId`/`profileVersion` profile data.
 
 ## Building
 

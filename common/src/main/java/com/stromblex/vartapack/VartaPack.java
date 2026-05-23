@@ -28,7 +28,7 @@ import java.util.List;
 public final class VartaPack {
     public static final String MOD_ID = "vartapack";
     public static final String MOD_NAME = "VartaPack";
-    public static final String MOD_VERSION = "1.0.0";
+    public static final String MOD_VERSION = resolveModVersion();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
     private static Platform platform;
@@ -40,10 +40,15 @@ public final class VartaPack {
 
     private VartaPack() {}
 
-    public static void init(Platform platform) {
+    public static synchronized void init(Platform platform) {
         if (initialized) return;
         VartaPack.platform = platform;
         initialized = true;
+        reload();
+    }
+
+    public static synchronized void reload() {
+        if (platform == null) return;
         try {
             ConfigManager mgr = new ConfigManager(platform.getGameDirectory());
             config = mgr.loadVartaConfig();
@@ -74,6 +79,20 @@ public final class VartaPack {
         return false;
     }
 
+    public static boolean shouldBlockContinue() {
+        return config.enabled()
+                && hasIssuesAtLeast(Severity.ERROR)
+                && (config.strictMode() || !config.allowContinueAnyway());
+    }
+
     public static boolean isScreenShownThisSession() { return screenShownThisSession; }
     public static void markScreenShown() { screenShownThisSession = true; }
+
+    private static String resolveModVersion() {
+        Package pkg = VartaPack.class.getPackage();
+        String implementationVersion = pkg == null ? null : pkg.getImplementationVersion();
+        if (implementationVersion != null && !implementationVersion.isBlank()) return implementationVersion;
+        String propertyVersion = System.getProperty("vartapack.version", "");
+        return propertyVersion.isBlank() ? "dev" : propertyVersion;
+    }
 }

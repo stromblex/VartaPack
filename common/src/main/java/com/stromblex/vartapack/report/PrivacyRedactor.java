@@ -39,11 +39,11 @@ public final class PrivacyRedactor {
         if (redactHome && !userHome.isEmpty()) {
             s = s.replace(userHome, "<user-home>");
         }
+        s = EMAIL.matcher(s).replaceAll("<redacted-email>");
         if (redactUser && !username.isEmpty() && username.length() >= 2) {
             // Whole-word replacement to avoid butchering unrelated text.
             s = s.replaceAll("(?i)\\b" + Pattern.quote(username) + "\\b", "<user>");
         }
-        s = EMAIL.matcher(s).replaceAll("<redacted-email>");
         s = DISCORD_WEBHOOK.matcher(s).replaceAll("<redacted-webhook>");
         s = IPV4.matcher(s).replaceAll("<redacted-ip>");
         s = TOKEN_KEYVAL.matcher(s).replaceAll("$1=<redacted>");

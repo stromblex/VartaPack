@@ -8,8 +8,7 @@ modId = "vartapack"
 version = "${version}"
 displayName = "VartaPack"
 description = '''
-A lightweight multi-loader support toolkit for Minecraft modpacks.
-Provides environment checks, mod validation, and one-click privacy-friendly support reports.
+A support report and diagnostics tool for Minecraft modpack authors.
 '''
 authors = "stromblex"
 logoFile = "assets/vartapack/icon.png"

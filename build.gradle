@@ -26,4 +26,38 @@ subprojects {
         maven { url = 'https://maven.fabricmc.net/' }
         maven { url = 'https://maven.neoforged.net/releases/' }
     }
+
+    tasks.withType(Jar).configureEach {
+        manifest {
+            attributes(
+                    'Implementation-Title': rootProject.property('mod_name'),
+                    'Implementation-Version': project.version,
+                    'Implementation-Vendor': rootProject.property('mod_authors')
+            )
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.slf4j:slf4j-api:2.0.13'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
+    testRuntimeOnly 'org.slf4j:slf4j-simple:2.0.13'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'common/src/main/java'
+            exclude 'com/stromblex/vartapack/client/**'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
 }
