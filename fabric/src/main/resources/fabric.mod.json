@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "vartapack",
+    "version": "${version}",
+    "name": "VartaPack",
+    "description": "A lightweight multi-loader support toolkit for Minecraft modpacks: environment checks, mod validation, and one-click privacy-friendly support reports.",
+    "authors": [
+        "stromblex"
+    ],
+    "contact": {
+        "homepage": "https://github.com/stromblex/VartaPack",
+        "sources": "https://github.com/stromblex/VartaPack",
+        "issues": "https://github.com/stromblex/VartaPack/issues"
+    },
+    "license": "MIT",
+    "icon": "assets/vartapack/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "com.stromblex.vartapack.fabric.VartaPackFabricClient"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=0.16.0",
+        "minecraft": ">=1.21 <1.22",
+        "java": ">=21"
+    },
+    "recommends": {
+        "fabric-api": "*"
+    },
+    "accessWidener": "vartapack.accesswidener"
+}

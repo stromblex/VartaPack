@@ -1,0 +1,19 @@
+{
+    "vartapack.screen.title": "VartaPack",
+    "vartapack.screen.subtitle": "Modpack support report tool",
+    "vartapack.button.copy_report": "Copy Support Report",
+    "vartapack.button.open_support": "Open Support Page",
+    "vartapack.button.open_game_dir": "Open Game Directory",
+    "vartapack.button.continue": "Continue",
+    "vartapack.toast.title": "VartaPack",
+    "vartapack.toast.issues": "%s issue(s) detected. Click for details.",
+    "vartapack.toast.issues_short": "%1$s issue(s). [%2$s] or click.",
+    "vartapack.message.report_copied": "Report copied!",
+    "vartapack.message.packping_detected": "PackPing detected.",
+    "vartapack.message.packping_recommended": "PackPing can be used as an optional companion for update notifications.",
+    "vartapack.severity.info": "Info",
+    "vartapack.severity.warning": "Warning",
+    "vartapack.severity.error": "Error",
+    "vartapack.severity.critical": "Critical",
+    "key.vartapack.open": "Open VartaPack"
+}
