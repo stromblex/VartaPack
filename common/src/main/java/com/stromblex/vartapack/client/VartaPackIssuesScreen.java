@@ -281,16 +281,6 @@ public final class VartaPackIssuesScreen extends Screen {
             g.drawCenteredString(this.font,
                     Component.translatable(CommonTexts.CONTINUE_BLOCKED),
                     this.width / 2, infoY, 0xFFDD88);
-            return;
-        }
-        if (vm.packPingInstalled()) {
-            g.drawCenteredString(this.font,
-                    Component.translatable(CommonTexts.PACKPING_DETECTED),
-                    this.width / 2, infoY, 0x80FF80);
-        } else if (vm.packPingRecommended()) {
-            g.drawCenteredString(this.font,
-                    Component.translatable(CommonTexts.PACKPING_RECOMMENDED),
-                    this.width / 2, infoY, 0xA0A0A0);
         }
     }
 
