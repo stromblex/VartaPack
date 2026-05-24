@@ -98,7 +98,7 @@ public final class VartaPackIssuesScreen extends Screen {
         listWidth = actionWidth > 0 ? contentWidth - actionWidth - 16 : contentWidth;
         actionX = contentX + contentWidth - actionWidth;
         listTop = 86;
-        listBottom = this.height - (actionWidth > 0 ? 28 : 92);
+        listBottom = this.height - (actionWidth > 0 ? 28 : 0); // narrow listBottom set in addActionButtons
     }
 
     private void addActionButtons(List<FooterButton> buttons) {
@@ -122,6 +122,7 @@ public final class VartaPackIssuesScreen extends Screen {
         int columns = Math.max(1, Math.min(2, (this.width - 24 + gap) / (buttonWidth + gap)));
         int rows = (int) Math.ceil(buttons.size() / (double) columns);
         int startY = this.height - 14 - rows * 28;
+        listBottom = startY - 8; // keep list above the button block
         int totalWidth = columns * buttonWidth + (columns - 1) * gap;
         int startX = (this.width - totalWidth) / 2;
         boolean hasOrphan = columns > 1 && buttons.size() % columns == 1;
