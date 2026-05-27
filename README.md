@@ -367,3 +367,7 @@ src/test/
 7. Test a broken instance.
 8. Copy the generated support report and verify that it is useful.
 9. Tune severities so harmless changes do not annoy players.
+
+## License
+
+MIT

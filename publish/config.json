@@ -1,0 +1,24 @@
+{
+  "modrinth": {
+    "project_id": "C1UZdEDT",
+    "loaders_fabric": ["fabric"],
+    "loaders_neoforge": ["neoforge"],
+    "game_versions": ["1.21"],
+    "version_type": "beta",
+    "featured": true,
+    "client_side": "required",
+    "server_side": "unsupported"
+  },
+  "curseforge": {
+    "project_id": "1552180",
+    "game_versions": [11457],
+    "loaders_fabric": [7499],
+    "loaders_neoforge": [10150],
+    "release_type": "beta"
+  },
+  "jar_paths": {
+    "fabric": "fabric/build/libs/vartapack-fabric-mc{mc_version}-{version}.jar",
+    "neoforge": "neoforge/build/libs/vartapack-neoforge-mc{mc_version}-{version}.jar"
+  },
+  "mc_version": "1.21"
+}

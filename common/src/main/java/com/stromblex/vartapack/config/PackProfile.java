@@ -55,4 +55,28 @@ public record PackProfile(
                 Collections.emptyList()
         );
     }
+
+    /**
+     * Returns an unconfigured profile used when no profile.json exists.
+     * Empty lists and zero thresholds mean no checks are performed.
+     */
+    public static PackProfile empty() {
+        return new PackProfile(
+                1,
+                "",
+                "",
+                "",
+                "",
+                "",
+                List.of(),
+                List.of(),
+                0,
+                0,
+                0,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList()
+        );
+    }
 }

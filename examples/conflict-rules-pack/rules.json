@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "supportPolicyText": "Instances with mod conflicts are not supported.",
+  "rules": [
+    {
+      "id": "block-optifine",
+      "type": "BLOCKED_MOD",
+      "modId": "optifine",
+      "displayName": "OptiFine",
+      "severity": "CRITICAL",
+      "category": "rendering",
+      "reason": "OptiFine is incompatible with Sodium and Iris.",
+      "fix": "Remove OptiFine from the mods folder.",
+      "versionRange": "",
+      "blockContinue": true
+    },
+    {
+      "id": "soft-block-rubidium",
+      "type": "SOFT_BLOCKED_MOD",
+      "modId": "rubidium",
+      "displayName": "Rubidium",
+      "severity": "WARNING",
+      "category": "rendering",
+      "reason": "Rubidium is an older Sodium fork and may cause rendering issues.",
+      "fix": "Remove Rubidium. Sodium is already included.",
+      "versionRange": "",
+      "blockContinue": false
+    },
+    {
+      "id": "recommend-entityculling",
+      "type": "RECOMMENDED_MOD",
+      "modId": "entityculling",
+      "displayName": "Entity Culling",
+      "severity": "INFO",
+      "category": "performance",
+      "reason": "Improves entity rendering performance.",
+      "fix": "Install Entity Culling for better FPS near entities.",
+      "versionRange": "",
+      "blockContinue": false
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "sodium-optifine",
+      "modA": "sodium",
+      "modB": "optifine",
+      "severity": "CRITICAL",
+      "reason": "Both modify the rendering pipeline and cannot coexist.",
+      "fix": "Remove OptiFine and keep Sodium.",
+      "versionRangeA": "",
+      "versionRangeB": ""
+    },
+    {
+      "id": "iris-oculus",
+      "modA": "iris",
+      "modB": "oculus",
+      "severity": "ERROR",
+      "reason": "Oculus is the Forge port of Iris. Both cannot be loaded together.",
+      "fix": "Remove Oculus. Iris is already included.",
+      "versionRangeA": "",
+      "versionRangeB": ""
+    }
+  ]
+}

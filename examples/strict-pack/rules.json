@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "supportPolicyText": "Modified instances receive limited support.",
+  "rules": [
+    {
+      "id": "block-optifine",
+      "type": "BLOCKED_MOD",
+      "modId": "optifine",
+      "displayName": "OptiFine",
+      "severity": "CRITICAL",
+      "category": "rendering",
+      "reason": "OptiFine conflicts with the rendering stack.",
+      "fix": "Remove OptiFine from the mods folder.",
+      "versionRange": "",
+      "blockContinue": true
+    },
+    {
+      "id": "suspicious-performant",
+      "type": "SUSPICIOUS_MOD",
+      "modId": "performant",
+      "displayName": "Performant",
+      "severity": "WARNING",
+      "category": "performance",
+      "reason": "Known to cause issues with some modpacks.",
+      "fix": "Remove if you experience lag or crashes.",
+      "versionRange": "",
+      "blockContinue": false
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "sodium-optifine",
+      "modA": "sodium",
+      "modB": "optifine",
+      "severity": "CRITICAL",
+      "reason": "Both mods modify the rendering pipeline.",
+      "fix": "Remove OptiFine and keep Sodium.",
+      "versionRangeA": "",
+      "versionRangeB": ""
+    }
+  ]
+}

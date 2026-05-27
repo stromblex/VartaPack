@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "config/sodium-options.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "required": true,
+      "severityIfMissing": "WARNING",
+      "severityIfChanged": "INFO",
+      "displayName": "Sodium Options",
+      "reason": "The modpack ships tested Sodium settings.",
+      "fix": "Restore this file from the original modpack archive."
+    },
+    {
+      "path": "config/example-mod.toml",
+      "sha256": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+      "required": false,
+      "severityIfMissing": "INFO",
+      "severityIfChanged": "INFO",
+      "displayName": "Example Mod Config",
+      "reason": "Optional tracked config file.",
+      "fix": ""
+    }
+  ]
+}

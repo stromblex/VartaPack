@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "enabled": true,
+  "showToastOnStartup": true,
+  "showScreenOnCriticalIssues": true,
+  "allowContinueAnyway": false,
+  "includeInstalledModsInReport": true,
+  "includeExtraModsInReport": true,
+  "redactUserHomePath": true,
+  "redactUsername": true,
+  "strictMode": true,
+  "extraModsSeverity": "ERROR",
+  "requiredModsSeverity": "ERROR",
+  "blockedModsSeverity": "CRITICAL",
+  "recommendedModsSeverity": "WARNING"
+}

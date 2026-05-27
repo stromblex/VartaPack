@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VartaPack Profile",
+  "description": "Defines the expected modpack environment for VartaPack validation.",
+  "type": "object",
+  "required": ["schema", "packId", "packName"],
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1
+    },
+    "packId": {
+      "type": "string",
+      "description": "Unique identifier for the modpack."
+    },
+    "packName": {
+      "type": "string",
+      "description": "Human-readable modpack name."
+    },
+    "profileVersion": {
+      "type": "string",
+      "description": "Version of the modpack profile."
+    },
+    "supportUrl": {
+      "type": "string",
+      "description": "URL for support or issue reporting."
+    },
+    "homepageUrl": {
+      "type": "string",
+      "description": "URL for the modpack homepage."
+    },
+    "expectedMinecraftVersions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of acceptable Minecraft versions."
+    },
+    "expectedLoaders": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of acceptable mod loaders (fabric, neoforge)."
+    },
+    "minimumJavaMajor": {
+      "type": "integer",
+      "description": "Minimum Java major version required."
+    },
+    "minimumRamMb": {
+      "type": "integer",
+      "description": "Minimum allocated RAM in MB."
+    },
+    "recommendedRamMb": {
+      "type": "integer",
+      "description": "Recommended allocated RAM in MB."
+    },
+    "requiredMods": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/modRule" },
+      "description": "Mods that must be present."
+    },
+    "recommendedMods": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/modRule" },
+      "description": "Mods that are recommended but not required."
+    },
+    "blockedMods": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/modRule" },
+      "description": "Mods that must not be present."
+    },
+    "allowedExtraMods": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Mod IDs that are allowed as extras without triggering a warning."
+    }
+  },
+  "$defs": {
+    "modRule": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "requiredVersion": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    }
+  }
+}
