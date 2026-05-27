@@ -2,6 +2,7 @@
     "vartapack.screen.title": "VartaPack",
     "vartapack.screen.subtitle": "Modpack support report tool",
     "vartapack.button.copy_report": "Copy Support Report",
+    "vartapack.button.copy_json": "Copy JSON Report",
     "vartapack.button.open_support": "Open Support Page",
     "vartapack.button.open_game_dir": "Open Game Directory",
     "vartapack.button.continue": "Continue",

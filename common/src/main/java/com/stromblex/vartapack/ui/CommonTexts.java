@@ -11,6 +11,7 @@ public final class CommonTexts {
     public static final String SCREEN_SUBTITLE = "vartapack.screen.subtitle";
 
     public static final String BTN_COPY_REPORT = "vartapack.button.copy_report";
+    public static final String BTN_COPY_JSON = "vartapack.button.copy_json";
     public static final String BTN_OPEN_SUPPORT = "vartapack.button.open_support";
     public static final String BTN_OPEN_GAME_DIR = "vartapack.button.open_game_dir";
     public static final String BTN_CONTINUE = "vartapack.button.continue";

@@ -6,6 +6,7 @@ import com.stromblex.vartapack.check.Severity;
 import com.stromblex.vartapack.report.SupportReport;
 import com.stromblex.vartapack.ui.CommonTexts;
 import com.stromblex.vartapack.ui.IssueViewModel;
+import com.stromblex.vartapack.validation.PackStatus;
 import com.stromblex.vartapack.util.UrlUtil;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -61,15 +62,22 @@ public final class VartaPackIssuesScreen extends Screen {
             VartaPack.shouldBlockContinue() ? VartaPackButton.Style.WARNING : VartaPackButton.Style.PRIMARY));
 
         buttons.add(new FooterButton(Component.translatable(CommonTexts.BTN_COPY_REPORT), b -> {
-            SupportReport report = vm.buildReport();
-            clipboard.copy(report.markdown());
-            VartaPackToast.show(
-                    Minecraft.getInstance(),
-                    Component.translatable(CommonTexts.TOAST_TITLE),
-                    Component.translatable(CommonTexts.REPORT_COPIED),
-                    Severity.INFO);
-        }, true, VartaPackButton.Style.PRIMARY));
+                clipboard.copy(vm.buildMarkdownReport());
+                VartaPackToast.show(
+                        Minecraft.getInstance(),
+                        Component.translatable(CommonTexts.TOAST_TITLE),
+                        Component.translatable(CommonTexts.REPORT_COPIED),
+                        Severity.INFO);
+            }, true, VartaPackButton.Style.PRIMARY));
 
+            buttons.add(new FooterButton(Component.translatable(CommonTexts.BTN_COPY_JSON), b -> {
+                clipboard.copy(vm.buildJsonReport());
+                VartaPackToast.show(
+                        Minecraft.getInstance(),
+                        Component.translatable(CommonTexts.TOAST_TITLE),
+                        Component.translatable(CommonTexts.REPORT_COPIED),
+                        Severity.INFO);
+            }, true, VartaPackButton.Style.SECONDARY));
         buttons.add(new FooterButton(Component.translatable(CommonTexts.BTN_OPEN_GAME_DIR), b -> {
             if (VartaPack.platform() != null) {
                 Util.getPlatform().openFile(VartaPack.platform().getGameDirectory().toFile());
@@ -178,7 +186,17 @@ public final class VartaPackIssuesScreen extends Screen {
 
     private void renderHeader(GuiGraphics g) {
         g.drawString(this.font, Component.translatable(CommonTexts.SCREEN_TITLE), contentX, 18, 0xFFFFFF, true);
-        g.drawString(this.font, Component.translatable(CommonTexts.SCREEN_SUBTITLE), contentX, 31, 0xD4DCE8, true);
+
+        // Pack status badge
+        PackStatus status = vm.packStatus();
+        String statusText = "Status: " + status.displayName().toUpperCase();
+        int statusColor = switch (status) {
+            case CLEAN -> 0x55FF55;
+            case MODIFIED -> 0xFFFF55;
+            case UNSUPPORTED -> 0xFFAA00;
+            case BROKEN -> 0xFF5555;
+        };
+        g.drawString(this.font, statusText, contentX, 31, statusColor, true);
 
         String pack = vm.packName().isBlank() ? "" :
                 vm.packName() + " (v" + vm.profileVersion() + ")";
@@ -206,8 +224,8 @@ public final class VartaPackIssuesScreen extends Screen {
 
     private int count(Severity severity) {
         int count = 0;
-        for (var result : vm.rawResults()) {
-            if (result.severity() == severity) count++;
+        for (var row : vm.rows()) {
+            if (row.severity() == severity) count++;
         }
         return count;
     }
@@ -270,6 +288,16 @@ public final class VartaPackIssuesScreen extends Screen {
                 lineY += 10;
             }
         }
+        if (row.fix() != null && !row.fix().isBlank()) {
+            lineY += 2;
+            g.drawString(this.font, "\u2192 Fix: ", textX, lineY, 0x88DDFF, true);
+            int fixOffset = this.font.width("\u2192 Fix: ");
+            for (String line : wrap(row.fix(), textWidth - fixOffset, 2)) {
+                g.drawString(this.font, line, textX + fixOffset, lineY, 0x88DDFF, true);
+                lineY += 10;
+                fixOffset = 0;
+            }
+        }
     }
 
     private void renderActionPanel(GuiGraphics g) {
@@ -290,6 +318,9 @@ public final class VartaPackIssuesScreen extends Screen {
         int h = 43 + wrap(row.message(), textWidth, 3).size() * 10;
         if (row.technicalDetails() != null && !row.technicalDetails().isBlank()) {
             h += 2 + wrap(row.technicalDetails(), textWidth, 2).size() * 10;
+        }
+        if (row.fix() != null && !row.fix().isBlank()) {
+            h += 2 + wrap(row.fix(), textWidth, 2).size() * 10;
         }
         return Math.max(56, h);
     }

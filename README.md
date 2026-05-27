@@ -1,29 +1,60 @@
-## Features
+## What it does
 
-- **RAM check** — validates minimum and recommended RAM allocation
-- **Java version check** — ensures correct Java major version
-- **Minecraft version check** — validates against expected versions list
-- **Loader check** — verifies correct mod loader (fabric/neoforge)
-- **Required mods check** — detects missing required mods (with optional version constraint)
-- **Blocked mods check** — detects forbidden/incompatible mods
-- **Recommended mods check** — suggests missing optional mods
-- **Extra mods check** — detects mods not in the modpack's allowed list
-- **Issues screen** — auto-opens on ERROR/CRITICAL problems, shows a compact severity summary and issue details
-- **Toast notification** — clickable popup on startup when issues are found, shows issue count and keybind
-- **Support report** — one-click generation, copies to clipboard, privacy-friendly (redacts paths/usernames)
-- **Configurable severity levels** — each check type can be set to INFO/WARNING/ERROR/CRITICAL
-- **In-game settings** — configure startup checks, report privacy, severity levels, and strict mode from the issues screen
-- **Profile wizard** — generate a baseline `profile.json` from the currently running instance
-- **Strict client gate** — when `strictMode` is enabled or `allowContinueAnyway` is disabled, ERROR/CRITICAL issues block closing the issues screen
-- **Privacy redaction** — removes OS username and home directory path from reports
-- **Keybind** — rebindable key to open issues screen (default: V), works on title screen and in-game
-- **Multi-loader** — single codebase for Fabric and NeoForge
+VartaPack validates the player's modpack installation and shows clear, actionable diagnostics.
 
-## For Modpack Authors
+### Validation
+
+- **Pack Status** — CLEAN / MODIFIED / UNSUPPORTED / BROKEN
+- **Required mods** — error if missing
+- **Blocked mods** — error if present (detects OptiFine even without fabric.mod.json)
+- **Recommended mods** — warning if missing
+- **Extra mods** — info for unknown mods (allowlist supported)
+- **Mod conflicts** — detects incompatible mod pairs (rules.json)
+- **Java version** — minimum major version check
+- **RAM** — minimum and recommended allocation check
+- **Minecraft version** — validates against expected versions
+- **Loader** — verifies correct mod loader
+- **File integrity** — SHA-256 hash checks for critical config files (integrity.json)
+
+### Crash Analysis
+
+- **15 built-in patterns** — mixin failures, OOM, class errors, duplicate mods, version mismatches, etc.
+- **Confidence scoring** — ranks findings by likelihood
+- **Scans** crash-reports/ and logs/latest.log automatically
+
+### Reports
+
+- **Markdown report** — one-click copy, includes status, issues, fix instructions, environment info
+- **JSON report** — machine-readable, same data
+- **Privacy redaction** — strips username and home path from output
+
+### UI
+
+- **Issues screen** — auto-opens on critical problems, shows severity pills, issue cards with fix instructions
+- **Toast notification** — startup popup with issue count
+- **Continue / Block** — configurable enforcement (allowContinueAnyway, strictMode)
+- **Settings screen** — in-game configuration
+- **Profile wizard** — generate profile.json from current instance
+- **Keybind** — V (rebindable) opens issues screen
+
+### Doctor Mode (CLI)
+
+Standalone diagnostics without launching Minecraft:
+
+```bash
+java -cp vartapack-*.jar com.stromblex.vartapack.doctor.DoctorCli \
+  --instance /path/to/.minecraft --verbose
+```
+
+Exit codes: 0 (OK), 1 (warnings), 2 (errors).
+
+---
+
+## Configuration
+
+All files go in `config/vartapack/`.
 
 ### profile.json
-
-Place in `config/vartapack/profile.json`:
 
 ```json
 {
@@ -32,7 +63,7 @@ Place in `config/vartapack/profile.json`:
   "packName": "My Modpack",
   "profileVersion": "1.0.0",
   "supportUrl": "https://discord.gg/example",
-  "homepageUrl": "https://example.com",
+  "homepageUrl": "",
   "expectedMinecraftVersions": ["1.21.1"],
   "expectedLoaders": ["fabric"],
   "minimumJavaMajor": 21,
@@ -41,43 +72,84 @@ Place in `config/vartapack/profile.json`:
   "requiredMods": [
     { "id": "sodium", "name": "Sodium", "requiredVersion": "", "reason": "" }
   ],
-  "blockedMods": [
-    { "id": "optifine", "name": "OptiFine", "requiredVersion": "", "reason": "Incompatible with Sodium" }
-  ],
   "recommendedMods": [
     { "id": "modmenu", "name": "Mod Menu", "requiredVersion": "", "reason": "" }
   ],
-  "allowedExtraMods": ["fabric-api", "cloth-config"]
+  "blockedMods": [
+    { "id": "optifine", "name": "OptiFine", "requiredVersion": "", "reason": "Incompatible with Sodium" }
+  ],
+  "allowedExtraMods": ["journeymap", "xaeros-minimap"]
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `schema` | int | Config schema version (always `1`) |
-| `packId` | string | Unique modpack identifier |
-| `packName` | string | Display name |
-| `profileVersion` | string | Profile version for tracking |
-| `supportUrl` | string | Link shown in support report |
-| `homepageUrl` | string | Modpack homepage link |
-| `expectedMinecraftVersions` | string[] | Allowed MC versions |
-| `expectedLoaders` | string[] | Allowed loaders (`fabric`, `neoforge`) |
-| `minimumJavaMajor` | int | Minimum Java version (e.g. `21`) |
-| `minimumRamMb` | int | Minimum RAM in MB (below = ERROR) |
-| `recommendedRamMb` | int | Recommended RAM in MB (below = WARNING) |
-| `requiredMods` | ModRule[] | Mods that must be installed |
-| `blockedMods` | ModRule[] | Mods that must NOT be installed |
-| `recommendedMods` | ModRule[] | Optional but suggested mods |
-| `allowedExtraMods` | string[] | Mod IDs that won't trigger "extra mod" warning |
+### rules.json
 
-**ModRule fields:** `id` (mod ID), `name` (display name), `requiredVersion` (version constraint, optional), `reason` (explanation text, optional)
+Extended rules with conflict detection:
 
-Supported `requiredVersion` forms include simple minimum versions (`"1.5.0"`), predicates (`">=1.2 <2.0"`), Maven/NeoForge-style ranges (`"[1.2,2.0)"`, `"[1.2,)"`), and caret/tilde ranges (`"^1.2.3"`, `"~1.2.3"`).
+```json
+{
+  "schema": 1,
+  "supportPolicyText": "",
+  "rules": [
+    {
+      "id": "block-optifine",
+      "type": "BLOCKED_MOD",
+      "modId": "optifine",
+      "displayName": "OptiFine",
+      "severity": "CRITICAL",
+      "category": "rendering",
+      "reason": "Incompatible with Sodium.",
+      "fix": "Remove OptiFine from the mods folder.",
+      "versionRange": "",
+      "blockContinue": true
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "sodium-optifine",
+      "modA": "sodium",
+      "modB": "optifine",
+      "severity": "CRITICAL",
+      "reason": "Both modify the rendering pipeline.",
+      "fix": "Remove OptiFine.",
+      "versionRangeA": "",
+      "versionRangeB": ""
+    }
+  ]
+}
+```
+
+Rule types: `REQUIRED_MOD`, `BLOCKED_MOD`, `SOFT_BLOCKED_MOD`, `RECOMMENDED_MOD`, `SUSPICIOUS_MOD`.
+
+Mod-to-mod conflicts are configured via the separate `conflicts` array shown above
+(version ranges are honored when present). The values `ALLOWED_EXTRA_MOD`,
+`ENVIRONMENT_RULE`, and `FILE_RULE` are accepted for forward compatibility but
+are not yet enforced; use `allowedExtraMods` in `profile.json` for extras and
+`integrity.json` for file rules.
+
+### integrity.json
+
+File hash verification:
+
+```json
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "config/sodium-options.json",
+      "sha256": "abc123...",
+      "required": true,
+      "severityIfMissing": "WARNING",
+      "severityIfChanged": "INFO",
+      "displayName": "Sodium Options",
+      "reason": "Pack uses optimized settings.",
+      "fix": "Restore from the modpack archive."
+    }
+  ]
+}
+```
 
 ### vartapack.json
-
-Place in `config/vartapack/vartapack.json`:
-
-> Legacy note: older docs mentioned `vartaconfig.json`. If that file exists and `vartapack.json` does not, VartaPack migrates it automatically.
 
 ```json
 {
@@ -86,8 +158,6 @@ Place in `config/vartapack/vartapack.json`:
   "showToastOnStartup": true,
   "showScreenOnCriticalIssues": true,
   "allowContinueAnyway": true,
-  "includeInstalledModsInReport": true,
-  "includeExtraModsInReport": true,
   "redactUserHomePath": true,
   "redactUsername": true,
   "strictMode": false,
@@ -98,34 +168,9 @@ Place in `config/vartapack/vartapack.json`:
 }
 ```
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `enabled` | bool | `true` | Enable/disable all checks |
-| `showToastOnStartup` | bool | `true` | Show toast notification when issues found |
-| `showScreenOnCriticalIssues` | bool | `true` | Auto-open screen on ERROR/CRITICAL |
-| `allowContinueAnyway` | bool | `true` | Allow dismissing the issues screen when ERROR/CRITICAL issues exist |
-| `includeInstalledModsInReport` | bool | `true` | Include full mod list in report |
-| `includeExtraModsInReport` | bool | `true` | Include extra mods in report |
-| `redactUserHomePath` | bool | `true` | Remove home path from report |
-| `redactUsername` | bool | `true` | Remove OS username from report |
-| `strictMode` | bool | `false` | Treat extra mods as ERROR and block continue until ERROR/CRITICAL issues are fixed |
-| `extraModsSeverity` | string | `"INFO"` | Severity for unknown mods |
-| `requiredModsSeverity` | string | `"ERROR"` | Severity for missing required mods |
-| `blockedModsSeverity` | string | `"ERROR"` | Severity for blocked mods |
-| `recommendedModsSeverity` | string | `"WARNING"` | Severity for missing recommended mods |
+Severity levels: `INFO` / `WARNING` / `ERROR` / `CRITICAL`
 
-Severity levels: `INFO`, `WARNING`, `ERROR`, `CRITICAL`
-
-## Controls
-
-- **V** — open issues screen (rebindable in controls)
-- **Click toast** — open issues screen
-- **Settings** — open the in-game VartaPack settings screen
-- **Profile Wizard** — create/update a baseline `profile.json` from the current instance
-
-## Enforcement Notes
-
-VartaPack currently provides a strict client-side gate. It can block closing the issues screen when the local profile has ERROR/CRITICAL issues, but it does not yet implement a server handshake that rejects clients during multiplayer login. If you need server-authoritative pack matching, pair VartaPack with a dedicated compatibility/checker mod or add a server-side handshake layer on top of the same `packId`/`profileVersion` profile data.
+---
 
 ## Building
 
@@ -133,6 +178,10 @@ VartaPack currently provides a strict client-side gate. It can block closing the
 ./gradlew clean build
 ```
 
-Output JARs:
-- `fabric/build/libs/vartapack-fabric-*.jar`
-- `neoforge/build/libs/vartapack-neoforge-*.jar`
+Output:
+- `fabric/build/libs/vartapack-fabric-mc1.21-2.0.0.jar`
+- `neoforge/build/libs/vartapack-neoforge-mc1.21-2.0.0.jar`
+
+## License
+
+MIT

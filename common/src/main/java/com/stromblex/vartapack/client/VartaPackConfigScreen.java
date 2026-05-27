@@ -168,7 +168,6 @@ public final class VartaPackConfigScreen extends Screen {
         if (VartaPack.platform() != null) {
             new ConfigManager(VartaPack.platform().getGameDirectory()).saveVartaConfig(draft);
             VartaPack.reload();
-            clipboard.copy(new ConfigManager(VartaPack.platform().getGameDirectory()).vartaConfigPath().toString());
         }
         Minecraft.getInstance().setScreen(parent);
     }
