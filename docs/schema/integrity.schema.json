@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VartaPack Integrity Manifest",
+  "description": "Defines files to verify using SHA-256 hashes.",
+  "type": "object",
+  "required": ["schema"],
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1
+    },
+    "files": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/fileEntry" }
+    }
+  },
+  "$defs": {
+    "fileEntry": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Relative path from the game directory. Must not contain '..' or be absolute."
+        },
+        "sha256": {
+          "type": "string",
+          "description": "Expected SHA-256 hash of the file."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether the file must exist. Default: true."
+        },
+        "severityIfMissing": {
+          "type": "string",
+          "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"]
+        },
+        "severityIfChanged": {
+          "type": "string",
+          "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"]
+        },
+        "displayName": { "type": "string" },
+        "reason": { "type": "string" },
+        "fix": { "type": "string" }
+      }
+    }
+  }
+}

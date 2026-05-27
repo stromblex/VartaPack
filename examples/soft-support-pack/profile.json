@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "packId": "soft-support-pack",
+  "packName": "Soft Support Pack",
+  "profileVersion": "1.0.0",
+  "supportUrl": "",
+  "homepageUrl": "",
+  "expectedMinecraftVersions": ["1.21"],
+  "expectedLoaders": ["fabric", "neoforge"],
+  "minimumJavaMajor": 21,
+  "minimumRamMb": 4096,
+  "recommendedRamMb": 6144,
+  "requiredMods": [],
+  "recommendedMods": [
+    {
+      "id": "sodium",
+      "name": "Sodium",
+      "requiredVersion": "",
+      "reason": "Recommended for better performance."
+    },
+    {
+      "id": "modmenu",
+      "name": "Mod Menu",
+      "requiredVersion": "",
+      "reason": "Recommended for configuration access."
+    }
+  ],
+  "blockedMods": [],
+  "allowedExtraMods": []
+}

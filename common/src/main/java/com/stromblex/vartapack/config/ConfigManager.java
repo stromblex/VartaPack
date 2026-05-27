@@ -81,22 +81,17 @@ public final class ConfigManager {
         ensureDir();
         Path path = packProfilePath();
         if (!Files.exists(path)) {
-            PackProfile defaults = PackProfile.defaults();
-            writePackProfile(path, defaults);
-            VartaPack.LOGGER.info("Created default pack profile at {}", path);
-            return defaults;
+            return PackProfile.empty();
         }
         try {
             String text = Files.readString(path);
             JsonObject obj = JsonParser.parseString(text).getAsJsonObject();
             return parsePackProfile(obj);
         } catch (Exception e) {
-            VartaPack.LOGGER.warn("Failed to read {}: {}. Backing up and regenerating defaults.",
+            VartaPack.LOGGER.warn("Failed to read {}: {}. Backing up corrupt file.",
                     path, e.getMessage());
             backupBroken(path);
-            PackProfile defaults = PackProfile.defaults();
-            writePackProfile(path, defaults);
-            return defaults;
+            return PackProfile.empty();
         }
     }
 

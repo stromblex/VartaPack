@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VartaPack Config",
+  "description": "Controls VartaPack behavior.",
+  "type": "object",
+  "required": ["schema"],
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether VartaPack is active. Default: true."
+    },
+    "showToastOnStartup": {
+      "type": "boolean",
+      "description": "Show a toast notification on startup. Default: true."
+    },
+    "showScreenOnCriticalIssues": {
+      "type": "boolean",
+      "description": "Automatically show the issues screen when critical issues are found. Default: true."
+    },
+    "allowContinueAnyway": {
+      "type": "boolean",
+      "description": "Allow the player to continue past the issues screen. Default: true."
+    },
+    "includeInstalledModsInReport": {
+      "type": "boolean",
+      "description": "Include the full mod list in support reports. Default: true."
+    },
+    "includeExtraModsInReport": {
+      "type": "boolean",
+      "description": "Include extra (non-pack) mods in support reports. Default: true."
+    },
+    "redactUserHomePath": {
+      "type": "boolean",
+      "description": "Redact the user home directory in reports. Default: true."
+    },
+    "redactUsername": {
+      "type": "boolean",
+      "description": "Redact the OS username in reports. Default: true."
+    },
+    "strictMode": {
+      "type": "boolean",
+      "description": "Elevate extra mods to ERROR and block continue on errors. Default: false."
+    },
+    "extraModsSeverity": {
+      "type": "string",
+      "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"],
+      "description": "Severity for extra (non-allowed) mods. Default: INFO."
+    },
+    "requiredModsSeverity": {
+      "type": "string",
+      "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"],
+      "description": "Severity for missing required mods. Default: ERROR."
+    },
+    "blockedModsSeverity": {
+      "type": "string",
+      "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"],
+      "description": "Severity for blocked mods. Default: ERROR."
+    },
+    "recommendedModsSeverity": {
+      "type": "string",
+      "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"],
+      "description": "Severity for missing recommended mods. Default: WARNING."
+    }
+  }
+}

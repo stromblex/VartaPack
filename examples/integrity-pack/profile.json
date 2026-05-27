@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "packId": "integrity-pack",
+  "packName": "Integrity Pack",
+  "profileVersion": "1.2.0",
+  "supportUrl": "",
+  "homepageUrl": "",
+  "expectedMinecraftVersions": ["1.21"],
+  "expectedLoaders": ["fabric"],
+  "minimumJavaMajor": 21,
+  "minimumRamMb": 4096,
+  "recommendedRamMb": 6144,
+  "requiredMods": [
+    {
+      "id": "sodium",
+      "name": "Sodium",
+      "requiredVersion": "",
+      "reason": "Core rendering mod."
+    }
+  ],
+  "recommendedMods": [],
+  "blockedMods": [],
+  "allowedExtraMods": []
+}

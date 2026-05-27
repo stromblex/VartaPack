@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "packId": "strict-pack",
+  "packName": "Strict Pack",
+  "profileVersion": "2.1.0",
+  "supportUrl": "https://example.com/support",
+  "homepageUrl": "https://example.com",
+  "expectedMinecraftVersions": ["1.21"],
+  "expectedLoaders": ["fabric"],
+  "minimumJavaMajor": 21,
+  "minimumRamMb": 6144,
+  "recommendedRamMb": 8192,
+  "requiredMods": [
+    {
+      "id": "sodium",
+      "name": "Sodium",
+      "requiredVersion": ">=0.5.0",
+      "reason": "Required for the tested rendering stack."
+    },
+    {
+      "id": "lithium",
+      "name": "Lithium",
+      "requiredVersion": "",
+      "reason": "Required for server-side optimizations."
+    }
+  ],
+  "recommendedMods": [
+    {
+      "id": "modmenu",
+      "name": "Mod Menu",
+      "requiredVersion": "",
+      "reason": "Recommended for configuration access."
+    }
+  ],
+  "blockedMods": [
+    {
+      "id": "optifine",
+      "name": "OptiFine",
+      "requiredVersion": "",
+      "reason": "Conflicts with Sodium."
+    }
+  ],
+  "allowedExtraMods": [
+    "journeymap",
+    "xaeros-minimap",
+    "xaeros-worldmap"
+  ]
+}
