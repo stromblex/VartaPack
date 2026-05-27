@@ -304,9 +304,9 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     private void renderFooterNote(GuiGraphics g) {
-        int infoY = this.height - 22;
-        if (actionWidth == 0) infoY = this.height - 92;
         if (VartaPack.shouldBlockContinue()) {
+            // Wide layout: note below the action panel; narrow layout: note in the header gap above the list
+            int infoY = actionWidth > 0 ? this.height - 22 : listTop - 12;
             g.drawCenteredString(this.font,
                     Component.translatable(CommonTexts.CONTINUE_BLOCKED),
                     this.width / 2, infoY, 0xFFDD88);

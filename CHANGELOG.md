@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1-beta
+
+- Fixed: blocking-notice text no longer overlaps buttons on narrow screens
+
+
 ## 0.1.0-beta
 
 Initial beta release
