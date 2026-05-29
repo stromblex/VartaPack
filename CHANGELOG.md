@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1.2-beta
+
+- Fixed toast notifications — migrated to `getToastManager()` following a client API rename
+- Fixed incorrect platform game version identifiers in publish configuration
+
 ## 0.1.1.1-beta
 
 - Updated all dependency versions to latest stable releases
