@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1.1-beta
+
+- Updated all dependency versions to latest stable releases
+- Simplified version numbering in mod distribution (removed loader-name suffix)
+- Upload display name now derived from JAR filename
+
 ## 0.1.1-beta
 
 - Fixed: blocking-notice text no longer overlaps buttons on narrow screens
