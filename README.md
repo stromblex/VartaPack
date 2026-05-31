@@ -285,7 +285,9 @@ Controls the behavior of VartaPack.
   "extraModsSeverity": "INFO",
   "requiredModsSeverity": "ERROR",
   "blockedModsSeverity": "ERROR",
-  "recommendedModsSeverity": "WARNING"
+  "recommendedModsSeverity": "WARNING",
+  "fixedGuiScale": true,
+  "targetGuiScale": 2
 }
 ```
 

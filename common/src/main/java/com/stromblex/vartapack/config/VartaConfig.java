@@ -16,7 +16,9 @@ public record VartaConfig(
         Severity extraModsSeverity,
         Severity requiredModsSeverity,
         Severity blockedModsSeverity,
-        Severity recommendedModsSeverity
+        Severity recommendedModsSeverity,
+        boolean fixedGuiScale,
+        int targetGuiScale
 ) {
     public static VartaConfig defaults() {
         return new VartaConfig(
@@ -33,7 +35,9 @@ public record VartaConfig(
                 Severity.INFO,
                 Severity.ERROR,
                 Severity.ERROR,
-                Severity.WARNING
+                Severity.WARNING,
+                true,
+                2
         );
     }
 }

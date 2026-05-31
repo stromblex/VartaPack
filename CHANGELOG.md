@@ -1,12 +1,22 @@
 # Changelog
 
+## 1.0.0
+
+* Added fixed GUI scale system — VartaPack UI now renders at a stable visual scale independent of Minecraft GUI Scale setting.
+* Added configurable target GUI scale with minimum readable scale clamp (UI never shrinks below 85%).
+* Redesigned issues screen with two-column layout, severity counter pills, scrollable issue list, and dedicated actions panel.
+* Added profile wizard screen and in-game settings screen.
+* Promoted from beta to stable release. No config migration required.
+
 ## 0.1.1.2-beta
 
+- Added support for Minecraft 1.21.2
 - Fixed toast notifications — migrated to `getToastManager()` following a client API rename
 - Fixed incorrect platform game version identifiers in publish configuration
 
 ## 0.1.1.1-beta
 
+- Added support for Minecraft 1.21.1
 - Updated all dependency versions to latest stable releases
 - Simplified version numbering in mod distribution (removed loader-name suffix)
 - Upload display name now derived from JAR filename

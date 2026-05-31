@@ -40,7 +40,8 @@ final class ChecksTest {
         VartaConfig config = new VartaConfig(
                 1, true, true, true, false,
                 true, true, true, true, true,
-                Severity.INFO, Severity.ERROR, Severity.ERROR, Severity.WARNING);
+                Severity.INFO, Severity.ERROR, Severity.ERROR, Severity.WARNING,
+                true, 2);
         CheckContext context = context(config, profile(List.of("sodium"), false),
                 List.of(new ModInfo("journeymap", "JourneyMap", "1.0.0", "")));
 

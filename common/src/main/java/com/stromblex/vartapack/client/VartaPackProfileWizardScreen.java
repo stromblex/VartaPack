@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public final class VartaPackProfileWizardScreen extends Screen {
+public final class VartaPackProfileWizardScreen extends FixedScaleScreen {
     private final Screen parent;
     private EditBox packId;
     private EditBox packName;
@@ -33,8 +33,7 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
     @Override
-    protected void init() {
-        super.init();
+    protected void initFixed() {
         PackProfile profile = VartaPack.profile();
         layoutMetrics();
         int x = panelX + 24;
@@ -49,9 +48,9 @@ public final class VartaPackProfileWizardScreen extends Screen {
         scanInstalledMods();
 
         int buttonWidth = 150;
-        int bottomY = this.height - 38;
+        int bottomY = uiHeight() - 38;
         int total = buttonWidth * 3 + 12;
-        int startX = (this.width - total) / 2;
+        int startX = (uiWidth() - total) / 2;
         addRenderableWidget(VartaPackButton.of(startX, bottomY, buttonWidth, 24,
             Component.translatable(CommonTexts.BTN_SCAN_PROFILE), b -> scanInstalledMods(), VartaPackButton.Style.SECONDARY));
         addRenderableWidget(VartaPackButton.of(startX + buttonWidth + 6, bottomY, buttonWidth, 24,
@@ -61,8 +60,8 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
         private void layoutMetrics() {
-        panelWidth = Math.min(660, Math.max(320, this.width - 40));
-        panelX = (this.width - panelWidth) / 2;
+        panelWidth = Math.min(660, Math.max(320, uiWidth() - 40));
+        panelX = (uiWidth() - panelWidth) / 2;
         }
 
     private EditBox editBox(int x, int y, int width, String value) {
@@ -119,13 +118,13 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        g.fill(0, 0, this.width, this.height, 0xFF05070B);
-        g.fill(panelX - 10, 12, panelX + panelWidth + 10, this.height - 14, 0xFF0B1018);
+    protected void renderFixed(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        g.fill(0, 0, uiWidth(), uiHeight(), 0xFF05070B);
+        g.fill(panelX - 10, 12, panelX + panelWidth + 10, uiHeight() - 14, 0xFF0B1018);
         g.fill(panelX - 10, 12, panelX + panelWidth + 10, 13, 0xFF566477);
         g.fill(panelX - 10, 52, panelX + panelWidth + 10, 53, 0xFF334050);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), this.width / 2, 20, 0xFFFFFF);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), this.width / 2, 34, 0xD4DCE8);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), uiWidth() / 2, 20, 0xFFFFFF);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), uiWidth() / 2, 34, 0xD4DCE8);
 
         int x = panelX + 24;
         int y = 64;
@@ -142,7 +141,7 @@ public final class VartaPackProfileWizardScreen extends Screen {
                 Component.translatable(CommonTexts.PROFILE_SCAN_HINT),
             x, infoY + 14, 0xD4DCE8, true);
 
-        super.render(g, mouseX, mouseY, partialTick);
+        renderFixedWidgets(g, mouseX, mouseY, partialTick);
     }
 
     private void drawLabel(GuiGraphics g, String key, int x, int y) {

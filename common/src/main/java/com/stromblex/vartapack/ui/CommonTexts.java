@@ -51,6 +51,7 @@ public final class CommonTexts {
     public static final String SETTING_REQUIRED_SEVERITY = "vartapack.setting.required_severity";
     public static final String SETTING_BLOCKED_SEVERITY = "vartapack.setting.blocked_severity";
     public static final String SETTING_RECOMMENDED_SEVERITY = "vartapack.setting.recommended_severity";
+    public static final String SETTING_FIXED_GUI_SCALE = "vartapack.setting.fixed_gui_scale";
 
     public static final String PROFILE_WIZARD_TITLE = "vartapack.profile_wizard.title";
     public static final String PROFILE_WIZARD_SUBTITLE = "vartapack.profile_wizard.subtitle";

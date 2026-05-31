@@ -42,10 +42,11 @@ def upload_modrinth(config, secrets, version, changelog, loader):
         return False
 
     loaders = mc[f"loaders_{loader}"]
+    display_version = f"{version}+{loader}"
 
     data = {
-        "name": f"VartaPack {version}",
-        "version_number": version,
+        "name": f"VartaPack {display_version}",
+        "version_number": display_version,
         "changelog": changelog,
         "dependencies": [],
         "game_versions": mc["game_versions"],
@@ -93,11 +94,12 @@ def upload_curseforge(config, secrets, version, changelog, loader):
         return False
 
     game_versions = cf["game_versions"] + cf[f"loaders_{loader}"]
+    display_version = f"{version}+{loader}"
 
     metadata = {
         "changelog": changelog,
         "changelogType": "markdown",
-        "displayName": jar_path.stem,
+        "displayName": display_version,
         "gameVersions": game_versions,
         "releaseType": cf["release_type"]
     }

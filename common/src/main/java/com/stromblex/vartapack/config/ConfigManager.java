@@ -112,7 +112,9 @@ public final class ConfigManager {
                 parseSeverity(getString(o, "extraModsSeverity", d.extraModsSeverity().name()), d.extraModsSeverity()),
                 parseSeverity(getString(o, "requiredModsSeverity", d.requiredModsSeverity().name()), d.requiredModsSeverity()),
                 parseSeverity(getString(o, "blockedModsSeverity", d.blockedModsSeverity().name()), d.blockedModsSeverity()),
-                parseSeverity(getString(o, "recommendedModsSeverity", d.recommendedModsSeverity().name()), d.recommendedModsSeverity())
+                parseSeverity(getString(o, "recommendedModsSeverity", d.recommendedModsSeverity().name()), d.recommendedModsSeverity()),
+                getBool(o, "fixedGuiScale", d.fixedGuiScale()),
+                Math.max(1, getInt(o, "targetGuiScale", d.targetGuiScale()))
         );
     }
 
@@ -205,6 +207,8 @@ public final class ConfigManager {
         o.addProperty("requiredModsSeverity", c.requiredModsSeverity().name());
         o.addProperty("blockedModsSeverity", c.blockedModsSeverity().name());
         o.addProperty("recommendedModsSeverity", c.recommendedModsSeverity().name());
+        o.addProperty("fixedGuiScale", c.fixedGuiScale());
+        o.addProperty("targetGuiScale", c.targetGuiScale());
         writeJson(path, o);
     }
 
