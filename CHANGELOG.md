@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0.1
+
+* Added support for Minecraft 1.21.3.
+* Updated Minecraft compatibility ranges for 1.21.3.
+* Updated internal modding dependencies and publishing metadata for current 1.21.3 releases.
+* No config changes are required.
+
 ## 1.0.0
 
 * Added fixed GUI scale system — VartaPack UI now renders at a stable visual scale independent of Minecraft GUI Scale setting.
