@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0.1
+
+* Added support for Minecraft 1.21.3.
+* Updated Minecraft compatibility ranges for 1.21.3.
+* Updated internal modding dependencies for current 1.21.3 releases.
+* Updated publishing metadata for the 1.21.3 release.
+* No config changes are required.
+
 ## 1.1.0
 
 * Added support for Minecraft 1.21.2.
