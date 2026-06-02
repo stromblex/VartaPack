@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+* Added support for Minecraft 1.21.2.
+* Reworked in-game screens to use responsive layouts across normal, compact, and narrow windows.
+* Improved scrolling, text wrapping, and fitting button labels on smaller screens.
+* Updated internal modding dependencies and publishing metadata for current 1.21.2 releases.
+* Existing configuration files remain compatible.
+
 ## 1.0.0.1
 
 * Added support for Minecraft 1.21.3.

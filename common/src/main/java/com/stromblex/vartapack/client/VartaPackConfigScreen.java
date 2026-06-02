@@ -11,15 +11,24 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-public final class VartaPackConfigScreen extends FixedScaleScreen {
+import java.util.ArrayList;
+import java.util.List;
+
+public final class VartaPackConfigScreen extends Screen {
+    private static final int ROW_HEIGHT = 26;
+    private static final int SECTION_HEADER_HEIGHT = 22;
+    private static final int SECTION_PADDING = 8;
+    private static final int BOTTOM_ACTION_HEIGHT = 34;
+
     private final Screen parent;
     private final ClipboardService clipboard;
+    private final VartaScrollArea scrollArea = new VartaScrollArea(new VartaRect(0, 0, 1, 1));
     private VartaConfig draft;
-        private int panelX;
-        private int panelWidth;
-        private int sectionY;
-        private int sectionWidth;
-        private int sectionGap;
+    private VartaScreenMetrics metrics;
+    private VartaRect frameBounds;
+    private VartaRect contentBounds;
+    private VartaRect bottomBounds;
+    private List<SectionLayout> sectionLayouts = List.of();
 
     public VartaPackConfigScreen(Screen parent, ClipboardService clipboard) {
         super(Component.translatable(CommonTexts.CONFIG_TITLE));
@@ -29,157 +38,243 @@ public final class VartaPackConfigScreen extends FixedScaleScreen {
     }
 
     @Override
-        protected void initFixed() {
+    protected void init() {
+        clearWidgets();
         layoutMetrics();
-        int x = panelX + 18;
-        int reportX = sectionX(1);
-        int severityX = sectionX(2);
-        int y = sectionY + 24;
-        int row = 26;
-
-        addToggle(x, y, sectionWidth, CommonTexts.SETTING_ENABLED, draft.enabled(), value -> draft = new VartaConfig(
-                draft.schema(), value, draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(x, y + row, sectionWidth, CommonTexts.SETTING_TOAST, draft.showToastOnStartup(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), value, draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(x, y + row * 2, sectionWidth, CommonTexts.SETTING_AUTO_SCREEN, draft.showScreenOnCriticalIssues(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), value, draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(x, y + row * 3, sectionWidth, CommonTexts.SETTING_ALLOW_CONTINUE, draft.allowContinueAnyway(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), value,
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(x, y + row * 4, sectionWidth, CommonTexts.SETTING_STRICT, draft.strictMode(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                value, draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-
-        addToggle(reportX, y, sectionWidth, CommonTexts.SETTING_INCLUDE_INSTALLED, draft.includeInstalledModsInReport(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                value, draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(reportX, y + row, sectionWidth, CommonTexts.SETTING_INCLUDE_EXTRA, draft.includeExtraModsInReport(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), value, draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(reportX, y + row * 2, sectionWidth, CommonTexts.SETTING_REDACT_HOME, draft.redactUserHomePath(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), value, draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addToggle(reportX, y + row * 3, sectionWidth, CommonTexts.SETTING_REDACT_USER, draft.redactUsername(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), value,
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-
-        addSeverity(severityX, y, sectionWidth, CommonTexts.SETTING_REQUIRED_SEVERITY, draft.requiredModsSeverity(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), value, draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addSeverity(severityX, y + row, sectionWidth, CommonTexts.SETTING_BLOCKED_SEVERITY, draft.blockedModsSeverity(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), value, draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addSeverity(severityX, y + row * 2, sectionWidth, CommonTexts.SETTING_RECOMMENDED_SEVERITY, draft.recommendedModsSeverity(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), value,
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-        addSeverity(severityX, y + row * 3, sectionWidth, CommonTexts.SETTING_EXTRA_SEVERITY, draft.extraModsSeverity(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), value, draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                draft.fixedGuiScale(), draft.targetGuiScale()));
-
-        // 4th column: Tools (Reset + Profile Wizard)
-        int toolsX = sectionX(3);
-        addRenderableWidget(VartaPackButton.of(toolsX, y, sectionWidth, 22, Component.translatable(CommonTexts.BTN_RESET_DEFAULTS), b -> {
-            draft = VartaConfig.defaults();
-            refreshWidgets();
-        }, VartaPackButton.Style.SUBTLE));
-        addRenderableWidget(VartaPackButton.of(toolsX, y + row, sectionWidth, 22,
-                Component.translatable(CommonTexts.BTN_PROFILE_WIZARD),
-                b -> Minecraft.getInstance().setScreen(new VartaPackProfileWizardScreen(this)), VartaPackButton.Style.SECONDARY));
-        addToggle(toolsX, y + row * 2, sectionWidth, CommonTexts.SETTING_FIXED_GUI_SCALE, draft.fixedGuiScale(), value -> draft = new VartaConfig(
-                draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
-                draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
-                draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
-                value, draft.targetGuiScale()));
-
-        // Bottom: Save + Back
-        int bottomY = uiHeight() - 43;
-        int buttonWidth = 124;
-        int total = buttonWidth * 2 + 6;
-        int startX = (uiWidth() - total) / 2;
-        addRenderableWidget(VartaPackButton.of(startX, bottomY, buttonWidth, 24,
-                Component.translatable(CommonTexts.BTN_SAVE), b -> saveAndClose(), VartaPackButton.Style.PRIMARY));
-        addRenderableWidget(VartaPackButton.of(startX + buttonWidth + 6, bottomY, buttonWidth, 24,
-                Component.translatable(CommonTexts.BTN_BACK), b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
+        scrollArea.layout(contentBounds, computeContentHeight());
+        addSectionButtons();
+        addBottomButtons();
     }
 
     private void layoutMetrics() {
-        panelWidth = Math.min(1080, Math.max(420, uiWidth() - 40));
-        panelX = (uiWidth() - panelWidth) / 2;
-        sectionGap = 16;
-        sectionWidth = (panelWidth - 36 - sectionGap * 3) / 4;
-        sectionY = 70;
+        metrics = VartaUiLayout.metrics(width, height);
+        frameBounds = metrics.frame();
+        int bottomReserved = bottomActionReservedHeight();
+        contentBounds = metrics.contentBounds(bottomReserved + metrics.gap()).inset(0);
+        bottomBounds = new VartaRect(frameBounds.x(), Math.max(contentBounds.bottom() + metrics.gap(), height - metrics.margin() - bottomReserved),
+                frameBounds.width(), bottomReserved);
+        sectionLayouts = layoutSections();
     }
 
-    private int sectionX(int index) {
-        return panelX + 18 + index * (sectionWidth + sectionGap);
+    private int bottomActionReservedHeight() {
+        return metrics != null && metrics.mode() == VartaLayoutMode.NARROW && width < 260 ? 58 : BOTTOM_ACTION_HEIGHT;
     }
 
-    private void addToggle(int x, int y, int width, String key, boolean initial, BooleanSetter setter) {
-        final boolean[] value = {initial};
-        VartaPackButton button = VartaPackButton.of(x, y, width, 22, toggleMessage(key, value[0]), b -> {
-            value[0] = !value[0];
-            setter.set(value[0]);
-            b.setMessage(toggleMessage(key, value[0]));
-        }, value[0] ? VartaPackButton.Style.SECONDARY : VartaPackButton.Style.SUBTLE);
-        addRenderableWidget(button);
-    }
+    private List<SectionLayout> layoutSections() {
+        List<SettingsSection> sections = sections();
+        List<SectionLayout> layouts = new ArrayList<>();
+        int columns = VartaUiLayout.columnsFor(metrics.mode());
+        int gap = metrics.gap();
+        int usableWidth = Math.max(1, contentBounds.width() - VartaUiLayout.SCROLLBAR_GUTTER);
+        int sectionWidth = Math.max(1, (usableWidth - gap * (columns - 1)) / columns);
+        int y = contentBounds.y();
 
-    private void addSeverity(int x, int y, int width, String key, Severity initial, SeveritySetter setter) {
-        final Severity[] value = {initial};
-        VartaPackButton button = VartaPackButton.of(x, y, width, 22, severityMessage(key, value[0]), b -> {
-            Severity[] values = Severity.values();
-            value[0] = values[(value[0].ordinal() + 1) % values.length];
-            setter.set(value[0]);
-            b.setMessage(severityMessage(key, value[0]));
-        }, severityStyle(value[0]));
-        addRenderableWidget(button);
-    }
-
-    private Component toggleMessage(String key, boolean value) {
-        return Component.translatable(CommonTexts.SETTING_FORMAT,
-                Component.translatable(key),
-                Component.translatable(value ? CommonTexts.STATE_ON : CommonTexts.STATE_OFF));
-    }
-
-    private Component severityMessage(String key, Severity value) {
-        return Component.translatable(CommonTexts.SETTING_FORMAT,
-                Component.translatable(key), Component.literal(value.name()));
-    }
-
-        private VartaPackButton.Style severityStyle(Severity severity) {
-                return severity.ordinal() >= Severity.ERROR.ordinal()
-                                ? VartaPackButton.Style.WARNING
-                                : VartaPackButton.Style.SECONDARY;
+        for (int i = 0; i < sections.size(); i += columns) {
+            int rowHeight = 0;
+            for (int col = 0; col < columns && i + col < sections.size(); col++) {
+                SettingsSection section = sections.get(i + col);
+                rowHeight = Math.max(rowHeight, sectionHeight(section));
+            }
+            for (int col = 0; col < columns && i + col < sections.size(); col++) {
+                SettingsSection section = sections.get(i + col);
+                int x = contentBounds.x() + col * (sectionWidth + gap);
+                layouts.add(new SectionLayout(section, new VartaRect(x, y, sectionWidth, sectionHeight(section))));
+            }
+            y += rowHeight + gap;
         }
+        return layouts;
+    }
+
+    private int computeContentHeight() {
+        int bottom = contentBounds.y();
+        for (SectionLayout layout : sectionLayouts) {
+            bottom = Math.max(bottom, layout.bounds().bottom());
+        }
+        return Math.max(1, bottom - contentBounds.y());
+    }
+
+    private int sectionHeight(SettingsSection section) {
+        return SECTION_HEADER_HEIGHT + SECTION_PADDING + section.rows().size() * ROW_HEIGHT + SECTION_PADDING;
+    }
+
+    private List<SettingsSection> sections() {
+        List<SettingsSection> sections = new ArrayList<>();
+        sections.add(new SettingsSection("Startup", List.of(
+                toggleRow(CommonTexts.SETTING_ENABLED, List.of("Enabled"), draft.enabled(), value -> draft = new VartaConfig(
+                        draft.schema(), value, draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_TOAST, List.of("Toast"), draft.showToastOnStartup(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), value, draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_AUTO_SCREEN, List.of("Auto-open"), draft.showScreenOnCriticalIssues(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), value, draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_ALLOW_CONTINUE, List.of("Continue"), draft.allowContinueAnyway(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), value,
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_STRICT, List.of("Strict"), draft.strictMode(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        value, draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale()))
+        )));
+
+        sections.add(new SettingsSection("Report & Privacy", List.of(
+                toggleRow(CommonTexts.SETTING_INCLUDE_INSTALLED, List.of("Installed mods", "Mods"), draft.includeInstalledModsInReport(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        value, draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_INCLUDE_EXTRA, List.of("Extra mods", "Extra"), draft.includeExtraModsInReport(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), value, draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_REDACT_HOME, List.of("Home path", "Home"), draft.redactUserHomePath(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), value, draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                toggleRow(CommonTexts.SETTING_REDACT_USER, List.of("Username", "User"), draft.redactUsername(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), value,
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale()))
+        )));
+
+        sections.add(new SettingsSection("Severity Policy", List.of(
+                severityRow(CommonTexts.SETTING_REQUIRED_SEVERITY, List.of("Required"), draft.requiredModsSeverity(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), value, draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                severityRow(CommonTexts.SETTING_BLOCKED_SEVERITY, List.of("Blocked"), draft.blockedModsSeverity(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), value, draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                severityRow(CommonTexts.SETTING_RECOMMENDED_SEVERITY, List.of("Recommended", "Recommend"), draft.recommendedModsSeverity(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), draft.extraModsSeverity(), draft.requiredModsSeverity(), draft.blockedModsSeverity(), value,
+                        draft.fixedGuiScale(), draft.targetGuiScale())),
+                severityRow(CommonTexts.SETTING_EXTRA_SEVERITY, List.of("Extra"), draft.extraModsSeverity(), value -> draft = new VartaConfig(
+                        draft.schema(), draft.enabled(), draft.showToastOnStartup(), draft.showScreenOnCriticalIssues(), draft.allowContinueAnyway(),
+                        draft.includeInstalledModsInReport(), draft.includeExtraModsInReport(), draft.redactUserHomePath(), draft.redactUsername(),
+                        draft.strictMode(), value, draft.requiredModsSeverity(), draft.blockedModsSeverity(), draft.recommendedModsSeverity(),
+                        draft.fixedGuiScale(), draft.targetGuiScale()))
+        )));
+
+        sections.add(new SettingsSection("Tools", List.of(
+                buttonRow(Component.translatable(CommonTexts.BTN_RESET_DEFAULTS), List.of("Defaults"), VartaPackButton.Style.SUBTLE, b -> {
+                    draft = VartaConfig.defaults();
+                    refreshWidgets();
+                }),
+                buttonRow(Component.translatable(CommonTexts.BTN_PROFILE_WIZARD), List.of("Wizard"), VartaPackButton.Style.SECONDARY,
+                        b -> Minecraft.getInstance().setScreen(new VartaPackProfileWizardScreen(this))),
+                infoRow(Component.literal("Responsive UI"), List.of("UI"), "AUTO")
+        )));
+        return sections;
+    }
+
+    private SettingRow toggleRow(String key, List<String> compactLabels, boolean initial, BooleanSetter setter) {
+        return new SettingRow(Component.translatable(key), compactLabels, valueLabel(initial), VartaPackButton.Style.SECONDARY,
+                b -> {
+                    boolean next = !currentToggleValue(b.getMessage().getString());
+                    setter.set(next);
+                    b.setMessage(rowMessage(Component.translatable(key), compactLabels, valueLabel(next), b.getWidth()));
+                });
+    }
+
+    private boolean currentToggleValue(String text) {
+        return text.endsWith("ON");
+    }
+
+    private SettingRow severityRow(String key, List<String> compactLabels, Severity initial, SeveritySetter setter) {
+        final Severity[] value = {initial};
+        return new SettingRow(Component.translatable(key), compactLabels, value[0].name(), severityStyle(value[0]),
+                b -> {
+                    Severity[] values = Severity.values();
+                    value[0] = values[(value[0].ordinal() + 1) % values.length];
+                    setter.set(value[0]);
+                    b.setMessage(rowMessage(Component.translatable(key), compactLabels, value[0].name(), b.getWidth()));
+                });
+    }
+
+    private SettingRow buttonRow(Component label, List<String> compactLabels, VartaPackButton.Style style, VartaPackButton.OnPress onPress) {
+        return new SettingRow(label, compactLabels, "", style, onPress);
+    }
+
+    private SettingRow infoRow(Component label, List<String> compactLabels, String value) {
+        return new SettingRow(label, compactLabels, value, VartaPackButton.Style.SUBTLE, b -> {});
+    }
+
+    private String valueLabel(boolean value) {
+        return value ? "ON" : "OFF";
+    }
+
+    private void addSectionButtons() {
+        int scroll = scrollArea.scroll();
+        for (SectionLayout layout : sectionLayouts) {
+            VartaRect bounds = layout.bounds();
+            int buttonX = bounds.x() + SECTION_PADDING;
+            int buttonWidth = Math.max(1, bounds.width() - SECTION_PADDING * 2);
+            int y = bounds.y() + SECTION_HEADER_HEIGHT + SECTION_PADDING - scroll;
+            for (SettingRow row : layout.section().rows()) {
+                VartaPackButton button = VartaPackButton.of(buttonX, y, buttonWidth, 22,
+                        rowMessage(row.label(), row.compactLabels(), row.value(), buttonWidth),
+                        row.onPress(), row.style());
+                button.visible = y >= contentBounds.y() && y + 22 <= contentBounds.bottom();
+                button.active = button.visible && !row.value().equals("AUTO");
+                addRenderableWidget(button);
+                y += ROW_HEIGHT;
+            }
+        }
+    }
+
+    private Component rowMessage(Component label, List<String> compactLabels, String value, int width) {
+        if (value == null || value.isBlank()) {
+            return VartaButtonHelper.fittingLabel(this.font, width, label, compactLabels);
+        }
+        List<String> candidates = new ArrayList<>();
+        for (String compact : compactLabels) {
+            candidates.add(compact + ": " + value);
+        }
+        return VartaButtonHelper.fittingLabel(this.font, width,
+                Component.literal(label.getString() + ": " + value), candidates);
+    }
+
+    private void addBottomButtons() {
+        int gap = metrics.gap();
+        boolean stack = metrics.mode() == VartaLayoutMode.NARROW && bottomBounds.width() < 260;
+        int buttonWidth = stack
+                ? VartaUiLayout.buttonWidth(bottomBounds.width(), 100, 180)
+                : VartaUiLayout.buttonWidth((bottomBounds.width() - gap) / 2, 100, 180);
+        int x = stack ? bottomBounds.x() + (bottomBounds.width() - buttonWidth) / 2 : bottomBounds.x() + (bottomBounds.width() - buttonWidth * 2 - gap) / 2;
+        int y = stack ? bottomBounds.y() + 2 : bottomBounds.y() + 5;
+        addRenderableWidget(VartaPackButton.of(x, y, buttonWidth, 24,
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_SAVE)),
+                b -> saveAndClose(), VartaPackButton.Style.PRIMARY));
+        int backX = stack ? x : x + buttonWidth + gap;
+        int backY = stack ? y + 28 : y;
+        addRenderableWidget(VartaPackButton.of(backX, backY, buttonWidth, 24,
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_BACK)),
+                b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
+    }
+
+    private VartaPackButton.Style severityStyle(Severity severity) {
+        return severity.ordinal() >= Severity.ERROR.ordinal()
+                ? VartaPackButton.Style.WARNING
+                : VartaPackButton.Style.SECONDARY;
+    }
 
     private void saveAndClose() {
         if (VartaPack.platform() != null) {
@@ -189,35 +284,56 @@ public final class VartaPackConfigScreen extends FixedScaleScreen {
         Minecraft.getInstance().setScreen(parent);
     }
 
-        private void refreshWidgets() {
+    private void refreshWidgets() {
         clearWidgets();
         init();
     }
 
-    @Override    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
-        @Override    protected void renderFixed(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-                                g.fill(0, 0, uiWidth(), uiHeight(), 0xFF05070B);
-                                g.fill(panelX - 10, 12, panelX + panelWidth + 10, uiHeight() - 14, 0xFF0B1018);
-                g.fill(panelX - 10, 12, panelX + panelWidth + 10, 13, 0xFF566477);
-                g.fill(panelX - 10, 52, panelX + panelWidth + 10, 53, 0xFF334050);
-
-                                g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_TITLE), uiWidth() / 2, 20, 0xFFFFFF);
-                                g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_SUBTITLE), uiWidth() / 2, 34, 0xD4DCE8);
-                renderSection(g, 0, "Startup");
-                renderSection(g, 1, "Report & Privacy");
-                renderSection(g, 2, "Severity Policy");
-                renderSection(g, 3, "Tools");
-                renderFixedWidgets(g, mouseX, mouseY, partialTick);
+    @Override
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        renderBase(g);
+        renderSections(g);
+        scrollArea.renderScrollbar(g);
+        super.render(g, mouseX, mouseY, partialTick);
     }
 
-        private void renderSection(GuiGraphics g, int index, String title) {
-                int x = sectionX(index);
-                int y = sectionY;
-                g.fill(x, y, x + sectionWidth, y + 1, 0xFF566477);
-                g.drawString(this.font, Component.literal(title), x, y + 7, 0xFFFFFF, true);
+    private void renderBase(GuiGraphics g) {
+        g.fill(0, 0, width, height, 0xFF05070B);
+        g.fill(0, 0, width, height, 0xFF0B1018);
+        g.fill(0, 0, width, 1, 0xFF566477);
+        g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8, 0xFFFFFF);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22, 0xD4DCE8);
+        g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
+    }
+
+    private void renderSections(GuiGraphics g) {
+        scrollArea.enableScissor(g);
+        int scroll = scrollArea.scroll();
+        for (SectionLayout layout : sectionLayouts) {
+            VartaRect bounds = layout.bounds();
+            int x = bounds.x();
+            int y = bounds.y() - scroll;
+            g.fill(x, y, x + bounds.width(), y + bounds.height(), 0xFF101722);
+            g.fill(x, y, x + bounds.width(), y + 1, 0xFF566477);
+            g.drawString(this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
+                    x + SECTION_PADDING, y + 7, 0xFFFFFF, true);
         }
+        g.disableScissor();
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        if (scrollArea.contains(mouseX, mouseY) && scrollArea.scrollBy(deltaY)) {
+            refreshWidgets();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+    }
 
     @Override
     public void onClose() {
@@ -226,4 +342,9 @@ public final class VartaPackConfigScreen extends FixedScaleScreen {
 
     private interface BooleanSetter { void set(boolean value); }
     private interface SeveritySetter { void set(Severity value); }
+
+    private record SettingsSection(String title, List<SettingRow> rows) {}
+    private record SectionLayout(SettingsSection section, VartaRect bounds) {}
+    private record SettingRow(Component label, List<String> compactLabels, String value, VartaPackButton.Style style,
+                              VartaPackButton.OnPress onPress) {}
 }

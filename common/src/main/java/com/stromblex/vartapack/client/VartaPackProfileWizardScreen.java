@@ -17,15 +17,23 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public final class VartaPackProfileWizardScreen extends FixedScaleScreen {
+public final class VartaPackProfileWizardScreen extends Screen {
+    private static final int BOTTOM_ACTION_HEIGHT = 34;
+    private static final int FIELD_ROW_NORMAL = 28;
+    private static final int FIELD_ROW_NARROW = 42;
+
     private final Screen parent;
+    private final VartaScrollArea scrollArea = new VartaScrollArea(new VartaRect(0, 0, 1, 1));
     private EditBox packId;
     private EditBox packName;
     private EditBox profileVersion;
     private EditBox supportUrl;
     private List<String> allowedMods = List.of();
-    private int panelX;
-    private int panelWidth;
+    private boolean scanned;
+    private VartaScreenMetrics metrics;
+    private VartaRect frameBounds;
+    private VartaRect contentBounds;
+    private VartaRect bottomBounds;
 
     public VartaPackProfileWizardScreen(Screen parent) {
         super(Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE));
@@ -33,41 +41,63 @@ public final class VartaPackProfileWizardScreen extends FixedScaleScreen {
     }
 
     @Override
-    protected void initFixed() {
+    protected void init() {
+        clearWidgets();
         PackProfile profile = VartaPack.profile();
         layoutMetrics();
-        int x = panelX + 24;
-        int y = 58;
-        int inputWidth = panelWidth - 150;
-
-        packId = editBox(x + 140, y, inputWidth, profile.packId().isBlank() ? "my-modpack" : profile.packId());
-        packName = editBox(x + 140, y + 26, inputWidth, profile.packName().isBlank() ? "My Modpack" : profile.packName());
-        profileVersion = editBox(x + 140, y + 52, inputWidth, profile.profileVersion().isBlank() ? "1.0.0" : profile.profileVersion());
-        supportUrl = editBox(x + 140, y + 78, inputWidth, profile.supportUrl());
-
-        scanInstalledMods();
-
-        int buttonWidth = 150;
-        int bottomY = uiHeight() - 38;
-        int total = buttonWidth * 3 + 12;
-        int startX = (uiWidth() - total) / 2;
-        addRenderableWidget(VartaPackButton.of(startX, bottomY, buttonWidth, 24,
-            Component.translatable(CommonTexts.BTN_SCAN_PROFILE), b -> scanInstalledMods(), VartaPackButton.Style.SECONDARY));
-        addRenderableWidget(VartaPackButton.of(startX + buttonWidth + 6, bottomY, buttonWidth, 24,
-            Component.translatable(CommonTexts.BTN_SAVE_PROFILE), b -> saveProfile(), VartaPackButton.Style.PRIMARY));
-        addRenderableWidget(VartaPackButton.of(startX + (buttonWidth + 6) * 2, bottomY, buttonWidth, 24,
-            Component.translatable(CommonTexts.BTN_BACK), b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
+        scrollArea.layout(contentBounds, contentHeight());
+        addFields(profile);
+        if (!scanned) {
+            scanInstalledMods();
+            scanned = true;
+        }
+        addBottomButtons();
     }
 
-        private void layoutMetrics() {
-        panelWidth = Math.min(660, Math.max(320, uiWidth() - 40));
-        panelX = (uiWidth() - panelWidth) / 2;
-        }
+    private void layoutMetrics() {
+        metrics = VartaUiLayout.metrics(width, height);
+        frameBounds = metrics.frame();
+        int bottomReserved = bottomActionReservedHeight();
+        contentBounds = metrics.contentBounds(bottomReserved + metrics.gap());
+        bottomBounds = new VartaRect(frameBounds.x(), Math.max(contentBounds.bottom() + metrics.gap(), height - metrics.margin() - bottomReserved),
+                frameBounds.width(), bottomReserved);
+    }
+
+    private int bottomActionReservedHeight() {
+        return metrics != null && metrics.mode() == VartaLayoutMode.NARROW && width < 360 ? 86 : BOTTOM_ACTION_HEIGHT;
+    }
+
+    private int contentHeight() {
+        int row = metrics.mode() == VartaLayoutMode.NARROW ? FIELD_ROW_NARROW : FIELD_ROW_NORMAL;
+        return SECTION_TOP_PADDING() + row * 4 + 54;
+    }
+
+    private int SECTION_TOP_PADDING() {
+        return metrics.mode() == VartaLayoutMode.NARROW ? 6 : 12;
+    }
+
+    private void addFields(PackProfile profile) {
+        int scroll = scrollArea.scroll();
+        int row = metrics.mode() == VartaLayoutMode.NARROW ? FIELD_ROW_NARROW : FIELD_ROW_NORMAL;
+        int x = contentBounds.x() + 14;
+        int y = contentBounds.y() + SECTION_TOP_PADDING() - scroll;
+        int labelWidth = metrics.mode() == VartaLayoutMode.NARROW ? contentBounds.width() - 28 : Math.min(130, contentBounds.width() / 3);
+        int inputX = metrics.mode() == VartaLayoutMode.NARROW ? x : x + labelWidth;
+        int inputYShift = metrics.mode() == VartaLayoutMode.NARROW ? 14 : 0;
+        int inputWidth = Math.max(40, contentBounds.right() - inputX - 14);
+
+        packId = editBox(inputX, y + inputYShift, inputWidth, profile.packId().isBlank() ? "my-modpack" : profile.packId());
+        packName = editBox(inputX, y + row + inputYShift, inputWidth, profile.packName().isBlank() ? "My Modpack" : profile.packName());
+        profileVersion = editBox(inputX, y + row * 2 + inputYShift, inputWidth, profile.profileVersion().isBlank() ? "1.0.0" : profile.profileVersion());
+        supportUrl = editBox(inputX, y + row * 3 + inputYShift, inputWidth, profile.supportUrl());
+    }
 
     private EditBox editBox(int x, int y, int width, String value) {
         EditBox box = new EditBox(this.font, x, y, width, 20, Component.empty());
         box.setMaxLength(256);
         box.setValue(value == null ? "" : value);
+        box.visible = y >= contentBounds.y() && y + 20 <= contentBounds.bottom();
+        box.active = box.visible;
         addRenderableWidget(box);
         return box;
     }
@@ -113,39 +143,104 @@ public final class VartaPackProfileWizardScreen extends FixedScaleScreen {
         Minecraft.getInstance().setScreen(parent);
     }
 
+    private void addBottomButtons() {
+        int gap = metrics.gap();
+        boolean stack = metrics.mode() == VartaLayoutMode.NARROW && bottomBounds.width() < 360;
+        int buttonCount = 3;
+        int buttonWidth = stack
+                ? VartaUiLayout.buttonWidth(bottomBounds.width(), 100, 160)
+                : VartaUiLayout.buttonWidth((bottomBounds.width() - gap * (buttonCount - 1)) / buttonCount, 100, 160);
+        int x = stack ? bottomBounds.x() + (bottomBounds.width() - buttonWidth) / 2
+                : bottomBounds.x() + (bottomBounds.width() - buttonWidth * buttonCount - gap * (buttonCount - 1)) / 2;
+        int y = stack ? bottomBounds.y() + 1 : bottomBounds.y() + 5;
+
+        addRenderableWidget(VartaPackButton.of(x, y, buttonWidth, 24,
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_SCAN_PROFILE), "Scan"),
+                b -> {
+                    scanInstalledMods();
+                    rebuildResponsiveWidgets();
+                }, VartaPackButton.Style.SECONDARY));
+        int saveX = stack ? x : x + buttonWidth + gap;
+        int saveY = stack ? y + 28 : y;
+        addRenderableWidget(VartaPackButton.of(saveX, saveY, buttonWidth, 24,
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_SAVE_PROFILE), "Save"),
+                b -> saveProfile(), VartaPackButton.Style.PRIMARY));
+        int backX = stack ? x : x + (buttonWidth + gap) * 2;
+        int backY = stack ? y + 56 : y;
+        addRenderableWidget(VartaPackButton.of(backX, backY, buttonWidth, 24,
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_BACK)),
+                b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
+    }
+
+    private void rebuildResponsiveWidgets() {
+        clearWidgets();
+        init();
+    }
+
     @Override
     public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
-    protected void renderFixed(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        g.fill(0, 0, uiWidth(), uiHeight(), 0xFF05070B);
-        g.fill(panelX - 10, 12, panelX + panelWidth + 10, uiHeight() - 14, 0xFF0B1018);
-        g.fill(panelX - 10, 12, panelX + panelWidth + 10, 13, 0xFF566477);
-        g.fill(panelX - 10, 52, panelX + panelWidth + 10, 53, 0xFF334050);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), uiWidth() / 2, 20, 0xFFFFFF);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), uiWidth() / 2, 34, 0xD4DCE8);
-
-        int x = panelX + 24;
-        int y = 64;
-        drawLabel(g, CommonTexts.PROFILE_FIELD_ID, x, y);
-        drawLabel(g, CommonTexts.PROFILE_FIELD_NAME, x, y + 26);
-        drawLabel(g, CommonTexts.PROFILE_FIELD_VERSION, x, y + 52);
-        drawLabel(g, CommonTexts.PROFILE_FIELD_SUPPORT, x, y + 78);
-
-        int infoY = y + 118;
-        g.drawString(this.font,
-                Component.translatable(CommonTexts.PROFILE_SCAN_SUMMARY, allowedMods.size()),
-            x, infoY, 0xFFFFFF, true);
-        g.drawString(this.font,
-                Component.translatable(CommonTexts.PROFILE_SCAN_HINT),
-            x, infoY + 14, 0xD4DCE8, true);
-
-        renderFixedWidgets(g, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        renderBase(g);
+        renderContent(g);
+        scrollArea.renderScrollbar(g);
+        super.render(g, mouseX, mouseY, partialTick);
     }
 
-    private void drawLabel(GuiGraphics g, String key, int x, int y) {
-        g.drawString(this.font, Component.translatable(key), x, y + 6, 0xFFFFFF, true);
+    private void renderBase(GuiGraphics g) {
+        g.fill(0, 0, width, height, 0xFF05070B);
+        g.fill(0, 0, width, height, 0xFF0B1018);
+        g.fill(0, 0, width, 1, 0xFF566477);
+        g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8, 0xFFFFFF);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22, 0xD4DCE8);
+        g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
+    }
+
+    private void renderContent(GuiGraphics g) {
+        scrollArea.enableScissor(g);
+        int scroll = scrollArea.scroll();
+        int row = metrics.mode() == VartaLayoutMode.NARROW ? FIELD_ROW_NARROW : FIELD_ROW_NORMAL;
+        int x = contentBounds.x() + 14;
+        int y = contentBounds.y() + SECTION_TOP_PADDING() - scroll;
+        int labelWidth = metrics.mode() == VartaLayoutMode.NARROW ? contentBounds.width() - 28 : Math.min(130, contentBounds.width() / 3);
+
+        drawLabel(g, CommonTexts.PROFILE_FIELD_ID, x, y, labelWidth);
+        drawLabel(g, CommonTexts.PROFILE_FIELD_NAME, x, y + row, labelWidth);
+        drawLabel(g, CommonTexts.PROFILE_FIELD_VERSION, x, y + row * 2, labelWidth);
+        drawLabel(g, CommonTexts.PROFILE_FIELD_SUPPORT, x, y + row * 3, labelWidth);
+
+        int infoY = y + row * 4 + 16;
+        int textWidth = Math.max(40, contentBounds.width() - 28 - VartaUiLayout.SCROLLBAR_GUTTER);
+        for (String line : VartaTextWrapHelper.wrap(this.font,
+                Component.translatable(CommonTexts.PROFILE_SCAN_SUMMARY, allowedMods.size()).getString(), textWidth, 2)) {
+            g.drawString(this.font, line, x, infoY, 0xFFFFFF, true);
+            infoY += 10;
+        }
+        infoY += 4;
+        for (String line : VartaTextWrapHelper.wrap(this.font,
+                Component.translatable(CommonTexts.PROFILE_SCAN_HINT).getString(), textWidth, 3)) {
+            g.drawString(this.font, line, x, infoY, 0xD4DCE8, true);
+            infoY += 10;
+        }
+        g.disableScissor();
+    }
+
+    private void drawLabel(GuiGraphics g, String key, int x, int y, int width) {
+        int labelY = metrics.mode() == VartaLayoutMode.NARROW ? y : y + 6;
+        g.drawString(this.font, VartaTextWrapHelper.trim(this.font, Component.translatable(key).getString(), width),
+                x, labelY, 0xFFFFFF, true);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        if (scrollArea.contains(mouseX, mouseY) && scrollArea.scrollBy(deltaY)) {
+            rebuildResponsiveWidgets();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     @Override

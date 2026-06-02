@@ -40,7 +40,6 @@
     "vartapack.setting.required_severity": "Required mods",
     "vartapack.setting.blocked_severity": "Blocked mods",
     "vartapack.setting.recommended_severity": "Recommended mods",
-    "vartapack.setting.fixed_gui_scale": "Fixed UI scale",
     "vartapack.profile_wizard.title": "Profile Wizard",
     "vartapack.profile_wizard.subtitle": "Create a baseline profile from this running instance",
     "vartapack.profile_wizard.field.id": "Pack ID",
