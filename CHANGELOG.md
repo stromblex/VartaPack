@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0.3
+
+* Added support for Minecraft 1.21.5.
+* Updated Minecraft compatibility ranges for 1.21.5.
+* Updated internal modding dependencies and Gradle tooling for current 1.21.5 releases.
+* Updated publishing metadata for the 1.21.5 release.
+* No config changes are required.
+
 ## 1.1.0.2
 
 * Added support for Minecraft 1.21.4.
