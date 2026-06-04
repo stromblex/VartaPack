@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import json
+import re
 import sys
 import requests
 from pathlib import Path
@@ -42,10 +43,22 @@ def normalize_changelog(changelog):
     )
 
 
+def external_changelog(changelog):
+    """Use only the public release-note body, without a leading version heading."""
+    changelog = normalize_changelog(changelog).strip()
+    return re.sub(r"^#{1,6}\s+[^\n]+\n+", "", changelog, count=1).strip()
+
+
+def curseforge_changelog(changelog):
+    """CurseForge preserves markdown line breaks more reliably with CRLF."""
+    changelog = changelog.replace("\r\n", "\n").replace("\r", "\n")
+    return changelog.replace("\n", "\r\n")
+
+
 def read_text_arg(value, file_value):
-    if file_value:
-        return normalize_changelog(Path(file_value).read_text())
-    return normalize_changelog(value)
+    if file_value is not None:
+        return external_changelog(Path(file_value).read_text())
+    return external_changelog(value or "")
 
 
 def upload_modrinth(config, secrets, version, changelog, loader):
@@ -113,7 +126,7 @@ def upload_curseforge(config, secrets, version, changelog, loader):
     display_name = jar_path.stem
 
     metadata = {
-        "changelog": changelog,
+        "changelog": curseforge_changelog(changelog),
         "changelogType": "markdown",
         "displayName": display_name,
         "gameVersions": game_versions,
@@ -138,7 +151,7 @@ def upload_curseforge(config, secrets, version, changelog, loader):
 def main():
     parser = argparse.ArgumentParser(description="Upload VartaPack to Modrinth/CurseForge")
     parser.add_argument("--version", required=True, help="Mod version (e.g. 0.1.0-beta)")
-    parser.add_argument("--changelog", default="", help="Changelog text (markdown)")
+    parser.add_argument("--changelog", default=None, help="Changelog text (markdown)")
     parser.add_argument("--changelog-file", default=None, help="Read changelog text from a file")
     parser.add_argument("--platform", choices=["modrinth", "curseforge", "both"], default="both")
     parser.add_argument("--loader", choices=["fabric", "neoforge", "both"], default="both")
@@ -146,7 +159,7 @@ def main():
     parser.add_argument("--changelog-neoforge-file", default=None, help="Read separate NeoForge changelog from a file")
     args = parser.parse_args()
 
-    if not args.changelog and not args.changelog_file:
+    if args.changelog is None and args.changelog_file is None:
         parser.error("one of --changelog or --changelog-file is required")
 
     secrets = load_json(SCRIPT_DIR / "secrets.json")
@@ -158,8 +171,8 @@ def main():
     success = True
     for loader in loaders:
         changelog = read_text_arg(args.changelog, args.changelog_file)
-        if loader == "neoforge" and (args.changelog_neoforge or args.changelog_neoforge_file):
-            changelog = read_text_arg(args.changelog_neoforge or "", args.changelog_neoforge_file)
+        if loader == "neoforge" and (args.changelog_neoforge is not None or args.changelog_neoforge_file is not None):
+            changelog = read_text_arg(args.changelog_neoforge, args.changelog_neoforge_file)
 
         for platform in platforms:
             if platform == "modrinth":

@@ -73,4 +73,8 @@ public final class VartaUiLayout {
         }
         return clamp(availableWidth, min, Math.min(max, availableWidth));
     }
+
+    public static int textColor(int color) {
+        return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;
+    }
 }

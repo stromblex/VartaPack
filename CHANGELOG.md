@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1.0
+
+* Added support for Minecraft 1.21.6.
+* Updated Minecraft compatibility ranges and publishing metadata for the 1.21.6 release.
+* Updated internal modding dependencies for current 1.21.6 releases.
+* Fixed UI text colors so headings, statuses, counters, and issue details render with full opacity.
+* No config changes are required.
+
 ## 1.1.0.3
 
 * Added support for Minecraft 1.21.5.

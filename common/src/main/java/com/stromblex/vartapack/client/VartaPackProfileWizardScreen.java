@@ -194,8 +194,10 @@ public final class VartaPackProfileWizardScreen extends Screen {
         g.fill(0, 0, width, height, 0xFF0B1018);
         g.fill(0, 0, width, 1, 0xFF566477);
         g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8, 0xFFFFFF);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22, 0xD4DCE8);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8,
+                VartaUiLayout.textColor(0xFFFFFF));
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22,
+                VartaUiLayout.textColor(0xD4DCE8));
         g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
     }
 
@@ -216,13 +218,13 @@ public final class VartaPackProfileWizardScreen extends Screen {
         int textWidth = Math.max(40, contentBounds.width() - 28 - VartaUiLayout.SCROLLBAR_GUTTER);
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 Component.translatable(CommonTexts.PROFILE_SCAN_SUMMARY, allowedMods.size()).getString(), textWidth, 2)) {
-            g.drawString(this.font, line, x, infoY, 0xFFFFFF, true);
+            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF), true);
             infoY += 10;
         }
         infoY += 4;
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 Component.translatable(CommonTexts.PROFILE_SCAN_HINT).getString(), textWidth, 3)) {
-            g.drawString(this.font, line, x, infoY, 0xD4DCE8, true);
+            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8), true);
             infoY += 10;
         }
         g.disableScissor();
@@ -231,7 +233,7 @@ public final class VartaPackProfileWizardScreen extends Screen {
     private void drawLabel(GuiGraphics g, String key, int x, int y, int width) {
         int labelY = metrics.mode() == VartaLayoutMode.NARROW ? y : y + 6;
         g.drawString(this.font, VartaTextWrapHelper.trim(this.font, Component.translatable(key).getString(), width),
-                x, labelY, 0xFFFFFF, true);
+                x, labelY, VartaUiLayout.textColor(0xFFFFFF), true);
     }
 
     @Override

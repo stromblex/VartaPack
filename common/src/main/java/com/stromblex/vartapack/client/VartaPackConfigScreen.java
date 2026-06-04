@@ -306,8 +306,10 @@ public final class VartaPackConfigScreen extends Screen {
         g.fill(0, 0, width, height, 0xFF0B1018);
         g.fill(0, 0, width, 1, 0xFF566477);
         g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8, 0xFFFFFF);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22, 0xD4DCE8);
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8,
+                VartaUiLayout.textColor(0xFFFFFF));
+        g.drawCenteredString(this.font, Component.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22,
+                VartaUiLayout.textColor(0xD4DCE8));
         g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
     }
 
@@ -321,7 +323,7 @@ public final class VartaPackConfigScreen extends Screen {
             g.fill(x, y, x + bounds.width(), y + bounds.height(), 0xFF101722);
             g.fill(x, y, x + bounds.width(), y + 1, 0xFF566477);
             g.drawString(this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
-                    x + SECTION_PADDING, y + 7, 0xFFFFFF, true);
+                    x + SECTION_PADDING, y + 7, VartaUiLayout.textColor(0xFFFFFF), true);
         }
         g.disableScissor();
     }
