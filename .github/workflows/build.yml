@@ -12,23 +12,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/actions/wrapper-validation@v4
+      - name: Read Java version
+        id: java
+        shell: bash
+        run: |
+          version="$(grep '^java_version=' gradle.properties | cut -d= -f2)"
+          if [ -z "$version" ]; then
+            version="21"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'microsoft'
+          java-version: ${{ steps.java.outputs.version }}
+          distribution: 'temurin'
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - name: Build (Fabric + NeoForge)
+      - name: Build
         run: ./gradlew clean build
       - name: Run tests
         run: ./gradlew test
-      - name: Upload Fabric JAR
+      - name: Upload JARs
         uses: actions/upload-artifact@v4
         with:
-          name: vartapack-fabric
-          path: fabric/build/libs/*.jar
-      - name: Upload NeoForge JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: vartapack-neoforge
-          path: neoforge/build/libs/*.jar
+          name: vartapack-jars
+          path: |
+            fabric/build/libs/*.jar
+            forge/build/libs/*.jar
+            neoforge/build/libs/*.jar
+          if-no-files-found: ignore
