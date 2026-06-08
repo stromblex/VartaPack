@@ -54,19 +54,11 @@ public final class VartaPackNeoForgeClient {
         if (!startupDone) {
             if (mc.screen == null && mc.level == null) return;
             startupDone = true;
+            if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
         }
 
-        if (!VartaPack.isScreenShownThisSession()
-                && VartaPack.hasIssuesAtLeast(Severity.ERROR)
-                && VartaPack.config().enabled()
-                && VartaPack.config().showScreenOnCriticalIssues()
-                && mc.screen instanceof TitleScreen) {
-            VartaPack.markScreenShown();
-            IssueViewModel vm = IssueViewModel.build();
-            mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, CLIPBOARD));
-            return;
-        }
+        if (tryOpenStartupIssuesScreen(mc)) return;
 
         handleKeybind(mc);
 
@@ -79,6 +71,8 @@ public final class VartaPackNeoForgeClient {
         boolean hasWarnings = VartaPack.hasIssuesAtLeast(Severity.WARNING);
         boolean hasErrors = VartaPack.hasIssuesAtLeast(Severity.ERROR);
 
+        if (hasErrors && VartaPack.config().showScreenOnCriticalIssues()) return;
+
         if (hasWarnings && VartaPack.config().showToastOnStartup()) {
             IssueViewModel vm = IssueViewModel.build();
             String keyName = openKey.getTranslatedKeyMessage().getString();
@@ -87,6 +81,22 @@ public final class VartaPackNeoForgeClient {
                     Component.translatable(CommonTexts.TOAST_ISSUES_SHORT, vm.rows().size(), keyName),
                     hasErrors ? Severity.ERROR : Severity.WARNING);
         }
+    }
+
+    private static boolean tryOpenStartupIssuesScreen(Minecraft mc) {
+        if (VartaPack.isScreenShownThisSession()
+                || !VartaPack.hasIssuesAtLeast(Severity.ERROR)
+                || !VartaPack.config().enabled()
+                || !VartaPack.config().showScreenOnCriticalIssues()
+                || !(mc.screen instanceof TitleScreen)) {
+            return false;
+        }
+
+        VartaPack.markScreenShown();
+        VartaPackToast.dismiss();
+        IssueViewModel vm = IssueViewModel.build();
+        mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, CLIPBOARD));
+        return true;
     }
 
     private static void handleKeybind(Minecraft mc) {
@@ -103,11 +113,20 @@ public final class VartaPackNeoForgeClient {
     }
 
     private static void openIssuesScreen(Minecraft mc) {
+        if (mc.screen instanceof VartaPackIssuesScreen) return;
+
+        VartaPackToast.dismiss();
         IssueViewModel vm = IssueViewModel.build();
         mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, CLIPBOARD));
     }
 
     private static void handleToastClick(Minecraft mc) {
+        if (mc.screen instanceof VartaPackIssuesScreen) {
+            VartaPackToast.dismiss();
+            wasMouseDown = false;
+            return;
+        }
+
         if (!VartaPackToast.isToastVisible()) {
             wasMouseDown = false;
             return;

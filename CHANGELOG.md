@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.2.0
+
+* Added support for Minecraft 1.21.7.
+* Updated Minecraft compatibility ranges and publishing metadata for the 1.21.7 release.
+* Updated internal modding dependencies for current 1.21.7 releases.
+* Fixed critical issue startup handling so the issues screen opens cleanly and dismisses stale startup toasts.
+* No config changes are required.
+
 ## 1.1.1.0
 
 * Added support for Minecraft 1.21.6.
