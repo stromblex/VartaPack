@@ -45,7 +45,9 @@ processResources {
     }
 }
 
-def jarVersionLabel = "mc${rootProject.minecraft_version}-${project.version}"
+def jarVersionLabel = rootProject.hasProperty('mc_label')
+        ? "mc${rootProject.mc_label}-${project.version}"
+        : "mc${rootProject.minecraft_version}-${project.version}"
 
 jar {
     archiveBaseName = "${rootProject.archives_base_name}-neoforge"

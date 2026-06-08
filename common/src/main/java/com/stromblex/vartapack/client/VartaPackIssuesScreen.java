@@ -8,7 +8,7 @@ import com.stromblex.vartapack.ui.IssueViewModel;
 import com.stromblex.vartapack.util.UrlUtil;
 import com.stromblex.vartapack.validation.PackStatus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -557,11 +557,11 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         renderBase(g);
         renderHeader(g);
         if (layoutMode == VartaLayoutMode.NARROW) {
@@ -581,7 +581,7 @@ public final class VartaPackIssuesScreen extends Screen {
         renderActionWidgets(g, mouseX, mouseY, partialTick);
     }
 
-    private void renderBase(GuiGraphics g) {
+    private void renderBase(GuiGraphicsExtractor g) {
         g.fill(0, 0, width, height, 0xFF05070B);
         g.fill(0, 0, width, height, 0xFF0B1018);
         g.fill(0, 0, width, 1, 0xFF566477);
@@ -591,18 +591,18 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderHeader(GuiGraphics g) {
+    private void renderHeader(GuiGraphicsExtractor g) {
         int titleY = headerTop;
-        g.drawString(this.font, Component.translatable(CommonTexts.SCREEN_TITLE), contentX, titleY, VartaUiLayout.textColor(0xFFFFFF), true);
+        g.text(this.font, Component.translatable(CommonTexts.SCREEN_TITLE), contentX, titleY, VartaUiLayout.textColor(0xFFFFFF), true);
 
         PackStatus status = vm.packStatus();
         String statusText = "Status: " + status.displayName().toUpperCase();
         int statusColor = colorForStatus(status);
-        g.drawString(this.font, trim(statusText, headerTextWidth()), contentX, titleY + 12, VartaUiLayout.textColor(statusColor), true);
+        g.text(this.font, trim(statusText, headerTextWidth()), contentX, titleY + 12, VartaUiLayout.textColor(statusColor), true);
 
         String pack = vm.packName().isBlank() ? "" : vm.packName() + " (v" + vm.profileVersion() + ")";
         if (!pack.isEmpty()) {
-            g.drawString(this.font, trim(pack, headerTextWidth()), contentX, titleY + 25, VartaUiLayout.textColor(0xF0F4FA), true);
+            g.text(this.font, trim(pack, headerTextWidth()), contentX, titleY + 25, VartaUiLayout.textColor(0xF0F4FA), true);
         }
 
         boolean compactCounters = layoutMode != VartaLayoutMode.NORMAL;
@@ -621,7 +621,7 @@ public final class VartaPackIssuesScreen extends Screen {
         return Math.max(40, counterLeft - contentX - 12);
     }
 
-    private void renderCounterPillsRightAligned(GuiGraphics g, int right, int y, boolean compact) {
+    private void renderCounterPillsRightAligned(GuiGraphicsExtractor g, int right, int y, boolean compact) {
         int x = right;
         List<Counter> counters = counters();
         for (int i = counters.size() - 1; i >= 0; i--) {
@@ -630,7 +630,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderCounterPillsWrapped(GuiGraphics g, int x, int y, int right, boolean compact) {
+    private void renderCounterPillsWrapped(GuiGraphicsExtractor g, int x, int y, int right, boolean compact) {
         int lineX = x;
         int lineY = y;
         int lineHeight = layoutMode == VartaLayoutMode.NARROW ? 14 : 18;
@@ -645,7 +645,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderNarrowTabs(GuiGraphics g) {
+    private void renderNarrowTabs(GuiGraphicsExtractor g) {
         drawTab(g, issuesTabX, tabY, tabWidth, "Issues", narrowTab == NarrowTab.ISSUES);
         drawTab(g, actionsTabX, tabY, tabWidth, "Actions", narrowTab == NarrowTab.ACTIONS);
         int dividerY = tabY + tabHeight + Math.max(3, edgePadding / 3);
@@ -653,28 +653,28 @@ public final class VartaPackIssuesScreen extends Screen {
         g.fill(contentX, contentY - 1, contentX + contentWidth, contentY, 0xFF151D29);
     }
 
-    private void drawTab(GuiGraphics g, int x, int y, int tabWidth, String label, boolean active) {
+    private void drawTab(GuiGraphicsExtractor g, int x, int y, int tabWidth, String label, boolean active) {
         int fill = active ? 0xFF263243 : 0xFF171E2A;
         int border = active ? 0xFF7E93AD : 0xFF3A4351;
         g.fill(x, y, x + tabWidth, y + tabHeight, fill);
         g.fill(x, y, x + tabWidth, y + 1, border);
-        g.drawCenteredString(this.font, trim(label, tabWidth - 8), x + tabWidth / 2, y + 5,
+        g.centeredText(this.font, trim(label, tabWidth - 8), x + tabWidth / 2, y + 5,
                 VartaUiLayout.textColor(active ? 0xFFFFFF : 0xB8C2D0));
     }
 
-    private int drawSummaryPill(GuiGraphics g, int right, int y, Severity severity, int count, boolean compact) {
+    private int drawSummaryPill(GuiGraphicsExtractor g, int right, int y, Severity severity, int count, boolean compact) {
         int pillWidth = counterPillWidth(severity, count, compact);
         int x = right - pillWidth;
         drawSummaryPillAt(g, x, y, pillWidth, severity, count, compact);
         return x - 4;
     }
 
-    private void drawSummaryPillAt(GuiGraphics g, int x, int y, int pillWidth, Severity severity, int count, boolean compact) {
+    private void drawSummaryPillAt(GuiGraphicsExtractor g, int x, int y, int pillWidth, Severity severity, int count, boolean compact) {
         String text = counterText(severity, count, compact);
         int color = colorFor(severity);
         g.fill(x, y, x + pillWidth, y + 14, 0xFF1B222D);
         g.fill(x, y, x + 2, y + 14, 0xFF000000 | color);
-        g.drawString(this.font, text, x + 6, y + 3, VartaUiLayout.textColor(0xFFFFFF), true);
+        g.text(this.font, text, x + 6, y + 3, VartaUiLayout.textColor(0xFFFFFF), true);
     }
 
     private int counterPillWidth(Severity severity, int count, boolean compact) {
@@ -702,8 +702,8 @@ public final class VartaPackIssuesScreen extends Screen {
         return count;
     }
 
-    private void renderActionPanel(GuiGraphics g) {
-        g.drawString(this.font, "Actions", actionX + actionPadding(), actionTop + 4, VartaUiLayout.textColor(0xB8C2D0), true);
+    private void renderActionPanel(GuiGraphicsExtractor g) {
+        g.text(this.font, "Actions", actionX + actionPadding(), actionTop + 4, VartaUiLayout.textColor(0xB8C2D0), true);
         if (actionStatusHeight > 0) {
             renderStatusBlock(g);
         }
@@ -718,7 +718,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderNarrowActionPanel(GuiGraphics g) {
+    private void renderNarrowActionPanel(GuiGraphicsExtractor g) {
         g.enableScissor(actionX, actionTop, actionX + actionWidth, actionBottom);
 
         int padding = narrowActionPadding();
@@ -729,7 +729,7 @@ public final class VartaPackIssuesScreen extends Screen {
                 : actionX + (actionWidth - buttonWidth) / 2;
         int y = actionTop + 4 - actionScroll;
 
-        g.drawString(this.font, "Actions", actionX + padding, y, VartaUiLayout.textColor(0xB8C2D0), true);
+        g.text(this.font, "Actions", actionX + padding, y, VartaUiLayout.textColor(0xB8C2D0), true);
         if (horizontal) {
             int statusX = actionX + padding;
             int statusY = actionTop + 20 - actionScroll;
@@ -756,7 +756,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderNarrowActionGroupLabels(GuiGraphics g, int x, int y, int width) {
+    private void renderNarrowActionGroupLabels(GuiGraphicsExtractor g, int x, int y, int width) {
         y = renderNarrowActionGroupLabel(g, "Reports", x, y, width, hasAction(ActionKind.COPY_REPORT) || hasAction(ActionKind.COPY_JSON));
         y += ACTION_GROUP_GAP;
         y = renderNarrowActionGroupLabel(g, "Files", x, y, width, hasAction(ActionKind.OPEN_DIR) || hasAction(ActionKind.OPEN_SUPPORT));
@@ -764,11 +764,11 @@ public final class VartaPackIssuesScreen extends Screen {
         renderNarrowActionGroupLabel(g, "Navigation", x, y, width, hasAction(ActionKind.CONTINUE) || hasAction(ActionKind.SETTINGS));
     }
 
-    private int renderNarrowActionGroupLabel(GuiGraphics g, String label, int x, int y, int width, boolean present) {
+    private int renderNarrowActionGroupLabel(GuiGraphicsExtractor g, String label, int x, int y, int width, boolean present) {
         if (!present) {
             return y;
         }
-        g.drawString(this.font, trim(label, width), x, y, VartaUiLayout.textColor(0x8FA1B8), true);
+        g.text(this.font, trim(label, width), x, y, VartaUiLayout.textColor(0x8FA1B8), true);
         int count = label.equals("Reports") ? actionCount(ActionKind.COPY_REPORT, ActionKind.COPY_JSON)
                 : label.equals("Files") ? actionCount(ActionKind.OPEN_DIR, ActionKind.OPEN_SUPPORT)
                 : actionCount(ActionKind.CONTINUE, ActionKind.SETTINGS);
@@ -799,7 +799,7 @@ public final class VartaPackIssuesScreen extends Screen {
         return count;
     }
 
-    private void renderNarrowStatusBlock(GuiGraphics g, int x, int y, int width, int height) {
+    private void renderNarrowStatusBlock(GuiGraphicsExtractor g, int x, int y, int width, int height) {
         g.fill(x, y, x + width, y + height, 0xFF171E2A);
         g.fill(x, y, x + 3, y + height, 0xFF000000 | colorForStatus(vm.packStatus()));
         g.fill(x, y, x + width, y + 1, 0xFF4A596B);
@@ -807,7 +807,7 @@ public final class VartaPackIssuesScreen extends Screen {
         int textX = x + 10;
         int textWidth = Math.max(12, width - 18);
         String title = "Profile " + vm.packStatus().displayName().toUpperCase();
-        g.drawString(this.font, trim(title, textWidth), textX, y + 6,
+        g.text(this.font, trim(title, textWidth), textX, y + 6,
                 VartaUiLayout.textColor(colorForStatus(vm.packStatus())), true);
 
         List<String> statusLines = switch (vm.packStatus()) {
@@ -824,14 +824,14 @@ public final class VartaPackIssuesScreen extends Screen {
             }
             List<String> wrappedLines = wrap(line, textWidth, remainingLines);
             for (String wrapped : wrappedLines) {
-                g.drawString(this.font, wrapped, textX, lineY, VartaUiLayout.textColor(0xFFD9E2EC), true);
+                g.text(this.font, wrapped, textX, lineY, VartaUiLayout.textColor(0xFFD9E2EC), true);
                 lineY += 10;
                 remainingLines--;
             }
         }
     }
 
-    private void renderStatusBlock(GuiGraphics g) {
+    private void renderStatusBlock(GuiGraphicsExtractor g) {
         int x = actionStatusX;
         int y = actionStatusY;
         int width = actionStatusWidth;
@@ -842,7 +842,7 @@ public final class VartaPackIssuesScreen extends Screen {
         g.fill(x, y, x + width, y + 1, 0xFF4A596B);
     }
 
-    private void renderActionStatusText(GuiGraphics g) {
+    private void renderActionStatusText(GuiGraphicsExtractor g) {
         if (actionStatusHeight <= 0 || actionStatusBlockHeight <= 0) {
             return;
         }
@@ -856,7 +856,7 @@ public final class VartaPackIssuesScreen extends Screen {
         String title = statusHeight < 38 && vm.packStatus() == PackStatus.BROKEN
             ? "BROKEN - fix errors"
             : vm.packStatus() == PackStatus.BROKEN ? "Profile BROKEN" : "Fix required";
-        g.drawString(this.font, trim(title, textWidth), x + 10, y + 6, VartaUiLayout.textColor(0xFFFF7777), true);
+        g.text(this.font, trim(title, textWidth), x + 10, y + 6, VartaUiLayout.textColor(0xFFFF7777), true);
 
         if (statusHeight >= 38) {
             String line = VartaPack.shouldBlockContinue()
@@ -864,15 +864,15 @@ public final class VartaPackIssuesScreen extends Screen {
                     : "ERROR/CRITICAL issues need attention.";
             int lineY = y + 19;
             for (String wrapped : wrap(line, textWidth, 2)) {
-                g.drawString(this.font, wrapped, x + 10, lineY, VartaUiLayout.textColor(0xFFD9E2EC), true);
+                g.text(this.font, wrapped, x + 10, lineY, VartaUiLayout.textColor(0xFFD9E2EC), true);
                 lineY += 10;
             }
         }
     }
 
-    private void renderActionWidgets(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    private void renderActionWidgets(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         g.enableScissor(actionX, actionButtonTop, actionX + actionWidth, actionButtonBottom);
-        super.render(g, mouseX, mouseY, partialTick);
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
         g.disableScissor();
     }
 
@@ -880,11 +880,11 @@ public final class VartaPackIssuesScreen extends Screen {
         return vm.packStatus() == PackStatus.BROKEN;
     }
 
-    private void renderIssueList(GuiGraphics g) {
+    private void renderIssueList(GuiGraphicsExtractor g) {
         List<IssueViewModel.Row> rows = vm.rows();
         if (rows.isEmpty()) {
             g.enableScissor(listX - 2, listTop, listX + listWidth + 2, listBottom);
-            g.drawCenteredString(this.font,
+            g.centeredText(this.font,
                     Component.translatable(CommonTexts.NO_VISIBLE_ISSUES),
                     listX + listWidth / 2, listTop + 18, VartaUiLayout.textColor(0xFFFFFF));
             g.disableScissor();
@@ -914,7 +914,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderIssueCard(GuiGraphics g, IssueViewModel.Row row, int y, int rowHeight) {
+    private void renderIssueCard(GuiGraphicsExtractor g, IssueViewModel.Row row, int y, int rowHeight) {
         int color = colorFor(row.severity());
         int padding = cardPadding();
         int innerX = listX + padding;
@@ -932,20 +932,20 @@ public final class VartaPackIssuesScreen extends Screen {
         int badgeWidth = Math.min(this.font.width(severity) + 12, textWidth);
         g.fill(innerX, lineY, innerX + badgeWidth, lineY + 14, 0xFF202633);
         g.fill(innerX, lineY + 13, innerX + badgeWidth, lineY + 14, 0xFF000000 | color);
-        g.drawString(this.font, trim(severity, Math.max(10, badgeWidth - 12)), innerX + 6, lineY + 3,
+        g.text(this.font, trim(severity, Math.max(10, badgeWidth - 12)), innerX + 6, lineY + 3,
                 VartaUiLayout.textColor(color), true);
 
         if (stackedHeader) {
             lineY += 18;
             for (String line : wrap(row.title(), textWidth, maxTitleLines())) {
-                g.drawString(this.font, line, innerX, lineY, VartaUiLayout.textColor(0xFFFFFF), true);
+                g.text(this.font, line, innerX, lineY, VartaUiLayout.textColor(0xFFFFFF), true);
                 lineY += 10;
             }
         } else {
             int titleX = innerX + badgeWidth + 8;
             int titleWidth = Math.max(40, innerRight - titleX);
             for (String line : wrap(row.title(), titleWidth, maxTitleLines())) {
-                g.drawString(this.font, line, titleX, lineY + 3, VartaUiLayout.textColor(0xFFFFFF), true);
+                g.text(this.font, line, titleX, lineY + 3, VartaUiLayout.textColor(0xFFFFFF), true);
                 lineY += 10;
             }
             lineY = Math.max(lineY, y + padding + 18);
@@ -962,20 +962,20 @@ public final class VartaPackIssuesScreen extends Screen {
         if (row.fix() != null && !row.fix().isBlank()) {
             lineY += 2;
             String prefix = "-> Fix: ";
-            g.drawString(this.font, prefix, innerX, lineY, VartaUiLayout.textColor(0x88DDFF), true);
+            g.text(this.font, prefix, innerX, lineY, VartaUiLayout.textColor(0x88DDFF), true);
             int prefixWidth = this.font.width(prefix);
             List<String> lines = wrap(row.fix(), Math.max(40, textWidth - prefixWidth), maxFixLines());
             for (int i = 0; i < lines.size(); i++) {
                 int x = i == 0 ? innerX + prefixWidth : innerX;
-                g.drawString(this.font, lines.get(i), x, lineY, VartaUiLayout.textColor(0x88DDFF), true);
+                g.text(this.font, lines.get(i), x, lineY, VartaUiLayout.textColor(0x88DDFF), true);
                 lineY += 10;
             }
         }
     }
 
-    private int drawWrapped(GuiGraphics g, String text, int x, int y, int wrapWidth, int maxLines, int color) {
+    private int drawWrapped(GuiGraphicsExtractor g, String text, int x, int y, int wrapWidth, int maxLines, int color) {
         for (String line : wrap(text, wrapWidth, maxLines)) {
-            g.drawString(this.font, line, x, y, VartaUiLayout.textColor(color), true);
+            g.text(this.font, line, x, y, VartaUiLayout.textColor(color), true);
             y += 10;
         }
         return y;

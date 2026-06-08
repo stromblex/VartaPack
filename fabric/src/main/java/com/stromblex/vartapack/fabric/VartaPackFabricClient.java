@@ -8,7 +8,7 @@ import com.stromblex.vartapack.ui.CommonTexts;
 import com.stromblex.vartapack.ui.IssueViewModel;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -33,7 +33,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         VartaPack.init(platform);
 
-        openKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        openKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 CommonTexts.KEY_OPEN_SCREEN,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
@@ -95,7 +95,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     }
 
     private void handleKeybind(Minecraft mc) {
-        int keyCode = openKey.key.getValue();
+        int keyCode = KeyMappingHelper.getBoundKeyOf(openKey).getValue();
         boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
         if (keyDown && !wasKeyDown) {
             if (!(mc.screen instanceof VartaPackIssuesScreen)

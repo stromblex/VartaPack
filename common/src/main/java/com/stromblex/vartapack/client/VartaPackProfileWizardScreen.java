@@ -8,7 +8,7 @@ import com.stromblex.vartapack.config.ConfigManager;
 import com.stromblex.vartapack.config.PackProfile;
 import com.stromblex.vartapack.ui.CommonTexts;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -178,30 +178,30 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         renderBase(g);
         renderContent(g);
         scrollArea.renderScrollbar(g);
-        super.render(g, mouseX, mouseY, partialTick);
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
     }
 
-    private void renderBase(GuiGraphics g) {
+    private void renderBase(GuiGraphicsExtractor g) {
         g.fill(0, 0, width, height, 0xFF05070B);
         g.fill(0, 0, width, height, 0xFF0B1018);
         g.fill(0, 0, width, 1, 0xFF566477);
         g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8,
+        g.centeredText(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8,
                 VartaUiLayout.textColor(0xFFFFFF));
-        g.drawCenteredString(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22,
+        g.centeredText(this.font, Component.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22,
                 VartaUiLayout.textColor(0xD4DCE8));
         g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
     }
 
-    private void renderContent(GuiGraphics g) {
+    private void renderContent(GuiGraphicsExtractor g) {
         scrollArea.enableScissor(g);
         int scroll = scrollArea.scroll();
         int row = metrics.mode() == VartaLayoutMode.NARROW ? FIELD_ROW_NARROW : FIELD_ROW_NORMAL;
@@ -218,21 +218,21 @@ public final class VartaPackProfileWizardScreen extends Screen {
         int textWidth = Math.max(40, contentBounds.width() - 28 - VartaUiLayout.SCROLLBAR_GUTTER);
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 Component.translatable(CommonTexts.PROFILE_SCAN_SUMMARY, allowedMods.size()).getString(), textWidth, 2)) {
-            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF), true);
+            g.text(this.font, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF), true);
             infoY += 10;
         }
         infoY += 4;
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 Component.translatable(CommonTexts.PROFILE_SCAN_HINT).getString(), textWidth, 3)) {
-            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8), true);
+            g.text(this.font, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8), true);
             infoY += 10;
         }
         g.disableScissor();
     }
 
-    private void drawLabel(GuiGraphics g, String key, int x, int y, int width) {
+    private void drawLabel(GuiGraphicsExtractor g, String key, int x, int y, int width) {
         int labelY = metrics.mode() == VartaLayoutMode.NARROW ? y : y + 6;
-        g.drawString(this.font, VartaTextWrapHelper.trim(this.font, Component.translatable(key).getString(), width),
+        g.text(this.font, VartaTextWrapHelper.trim(this.font, Component.translatable(key).getString(), width),
                 x, labelY, VartaUiLayout.textColor(0xFFFFFF), true);
     }
 

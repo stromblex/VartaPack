@@ -1,6 +1,6 @@
 package com.stromblex.vartapack.client;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -37,7 +37,7 @@ public final class VartaPackButton extends Button {
     }
 
     @Override
-    protected void renderContents(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         Style resolved = this.active ? style : Style.DISABLED;
         int fill = this.isHoveredOrFocused() && this.active ? resolved.hover : resolved.base;
         int border = this.isHoveredOrFocused() && this.active ? 0xFF9DB9D8 : 0xFF3A4351;
@@ -55,6 +55,6 @@ public final class VartaPackButton extends Button {
 
         int textColor = this.active ? resolved.text : Style.DISABLED.text;
         Component message = getMessage().copy().withStyle(s -> s.withColor(textColor & 0xFFFFFF));
-        renderScrollingStringOverContents(g.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), message, 5);
+        extractScrollingStringOverContents(g.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE), message, 5);
     }
 }

@@ -1,6 +1,6 @@
 package com.stromblex.vartapack.client;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public final class VartaScrollArea {
     private VartaRect bounds;
@@ -45,11 +45,11 @@ public final class VartaScrollArea {
         return bounds.contains(mouseX, mouseY);
     }
 
-    public void enableScissor(GuiGraphics graphics) {
+    public void enableScissor(GuiGraphicsExtractor graphics) {
         graphics.enableScissor(bounds.x(), bounds.y(), bounds.right(), bounds.bottom());
     }
 
-    public void renderScrollbar(GuiGraphics graphics) {
+    public void renderScrollbar(GuiGraphicsExtractor graphics) {
         int maxScroll = maxScroll();
         if (maxScroll <= 0 || bounds.height() <= 0) {
             return;

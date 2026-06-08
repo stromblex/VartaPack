@@ -2,10 +2,6 @@ plugins {
     id 'fabric-loom' version "${fabric_loom_version}"
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/vartapack.accesswidener")
-}
-
 sourceSets {
     main {
         java {
@@ -19,9 +15,9 @@ sourceSets {
 
 dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    implementation "net.fabricmc.fabric-api:fabric-key-mapping-api-v1:2.0.5+e2bdee78f7"
 }
 
 processResources {
@@ -37,15 +33,11 @@ processResources {
     }
 }
 
-def jarVersionLabel = "mc${rootProject.minecraft_version}-${project.version}"
+def jarVersionLabel = rootProject.hasProperty('mc_label')
+        ? "mc${rootProject.mc_label}-${project.version}"
+        : "mc${rootProject.minecraft_version}-${project.version}"
 
 jar {
-    archiveBaseName = "${rootProject.archives_base_name}-fabric"
-    archiveAppendix = ''
-    archiveVersion = jarVersionLabel
-}
-
-remapJar {
     archiveBaseName = "${rootProject.archives_base_name}-fabric"
     archiveAppendix = ''
     archiveVersion = jarVersionLabel

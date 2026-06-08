@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.2.5
+
+* Added support for Minecraft 26.1, 26.1.1, and 26.1.2.
+* Updated Minecraft compatibility ranges and publishing metadata for the 26.1 release.
+* Updated internal modding dependencies and Gradle tooling for current 26.1 releases.
+* Updated client rendering and keymapping integration for current Minecraft APIs.
+* No config changes are required.
+
 ## 1.1.2.4
 
 * Added support for Minecraft 1.21.11.
