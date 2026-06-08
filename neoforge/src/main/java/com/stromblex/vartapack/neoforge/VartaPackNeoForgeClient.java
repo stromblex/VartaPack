@@ -11,7 +11,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,7 +29,7 @@ public final class VartaPackNeoForgeClient {
     private static boolean wasKeyDown = false;
     private static final NeoForgeClipboardService CLIPBOARD = new NeoForgeClipboardService();
     private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            ResourceLocation.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
+            Identifier.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
 
     private static KeyMapping openKey;
 

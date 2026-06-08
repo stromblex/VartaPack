@@ -7,12 +7,12 @@ import com.stromblex.vartapack.ui.CommonTexts;
 import com.stromblex.vartapack.ui.IssueViewModel;
 import com.stromblex.vartapack.util.UrlUtil;
 import com.stromblex.vartapack.validation.PackStatus;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 
 import java.net.URI;
 import java.util.ArrayList;

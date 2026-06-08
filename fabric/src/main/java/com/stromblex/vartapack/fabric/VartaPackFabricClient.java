@@ -13,7 +13,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
@@ -25,7 +25,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     private boolean wasMouseDown = false;
     private boolean wasKeyDown = false;
     private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            ResourceLocation.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
+            Identifier.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
 
     private KeyMapping openKey;
 

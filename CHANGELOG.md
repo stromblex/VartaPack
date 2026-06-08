@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.2.4
+
+* Added support for Minecraft 1.21.11.
+* Updated Minecraft compatibility ranges and publishing metadata for the 1.21.11 release.
+* Updated internal modding dependencies for current 1.21.11 releases.
+* Updated client button rendering and keybinding integration for current Minecraft APIs.
+* No config changes are required.
+
 ## 1.1.2.3
 
 * Added support for Minecraft 1.21.10.
