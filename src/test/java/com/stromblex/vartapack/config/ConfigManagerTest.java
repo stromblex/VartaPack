@@ -47,9 +47,9 @@ final class ConfigManagerTest {
                 "2.0.0",
                 "https://example.com/support",
                 "https://example.com",
-                List.of("1.21.1"),
+                List.of("1.18.2"),
                 List.of("fabric"),
-                21,
+                17,
                 4096,
                 6144,
                 List.of(new ModRule("sodium", "Sodium", ">=0.5.0", "renderer")),
@@ -62,8 +62,8 @@ final class ConfigManagerTest {
         PackProfile loaded = manager.loadPackProfile();
 
         assertEquals("real-pack", loaded.packId());
-        assertEquals(List.of("1.21.1"), loaded.expectedMinecraftVersions());
-        assertEquals("sodium", loaded.requiredMods().getFirst().id());
-        assertEquals("optifine", loaded.blockedMods().getFirst().id());
+        assertEquals(List.of("1.18.2"), loaded.expectedMinecraftVersions());
+        assertEquals("sodium", loaded.requiredMods().get(0).id());
+        assertEquals("optifine", loaded.blockedMods().get(0).id());
     }
 }

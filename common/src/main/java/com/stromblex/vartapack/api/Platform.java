@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Loader-agnostic abstraction over the host loader (Fabric / NeoForge).
+ * Loader-agnostic abstraction over the host loader (Fabric / Forge).
  * Common code must never import loader classes; it uses this interface.
  */
 public interface Platform {

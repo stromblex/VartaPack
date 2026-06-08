@@ -25,7 +25,7 @@ public final class VersionUtil {
      * Supports common mod metadata forms:
      * <ul>
      *   <li>predicate constraints like {@code >=1.2.3 <2.0.0},</li>
-     *   <li>Maven/NeoForge ranges like {@code [1.2,2.0)} or {@code [1.2,)},</li>
+     *   <li>Maven/loader ranges like {@code [1.2,2.0)} or {@code [1.2,)},</li>
      *   <li>caret/tilde ranges like {@code ^1.2.3} and {@code ~1.2.3},</li>
      *   <li>bare versions as best-effort minimum versions.</li>
      * </ul>

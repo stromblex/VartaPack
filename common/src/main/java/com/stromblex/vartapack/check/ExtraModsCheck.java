@@ -21,7 +21,6 @@ public final class ExtraModsCheck implements Check {
         "fabricloader",
         "fabric",
         "fabric-api",
-        "neoforge",
         "forge",
         "fml",
         "lowcodefml",
@@ -30,7 +29,6 @@ public final class ExtraModsCheck implements Check {
 
     private static final List<String> PLATFORM_PREFIXES = List.of(
         "fabric-",
-        "neoforge-",
         "forge-"
     );
 

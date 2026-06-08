@@ -1,9 +1,9 @@
-package com.stromblex.vartapack.neoforge;
+package com.stromblex.vartapack.forge;
 
 import com.stromblex.vartapack.api.ClipboardService;
 import net.minecraft.client.Minecraft;
 
-public final class NeoForgeClipboardService implements ClipboardService {
+public final class ForgeClipboardService implements ClipboardService {
     @Override
     public void copy(String text) {
         Minecraft mc = Minecraft.getInstance();

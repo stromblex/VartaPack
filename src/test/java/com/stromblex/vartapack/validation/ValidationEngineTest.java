@@ -27,7 +27,7 @@ final class ValidationEngineTest {
                 new ModInfo("fabric-api", "Fabric API", "0.100.0", "")
         ));
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(new ModRule("sodium", "Sodium", "", "")),
                 List.of(), List.of(), List.of("fabric-api"));
         VartaConfig config = VartaConfig.defaults();
@@ -42,7 +42,7 @@ final class ValidationEngineTest {
     void missingRequiredModReturnsBroken() {
         Platform platform = testPlatform(List.of());
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(new ModRule("sodium", "Sodium", "", "needed")),
                 List.of(), List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
@@ -60,7 +60,7 @@ final class ValidationEngineTest {
                 new ModInfo("optifine", "OptiFine", "1.0", "")
         ));
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(), List.of(),
                 List.of(new ModRule("optifine", "OptiFine", "", "incompatible")),
                 List.of());
@@ -79,7 +79,7 @@ final class ValidationEngineTest {
                 new ModInfo("journeymap", "JourneyMap", "1.0", "")
         ));
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(new ModRule("sodium", "Sodium", "", "")),
                 List.of(), List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
@@ -99,7 +99,7 @@ final class ValidationEngineTest {
                 new ModInfo("sodium", "Sodium", "0.5.11", "")
         ));
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(), List.of(), List.of(), List.of("optifine", "sodium"));
         VartaConfig config = VartaConfig.defaults();
         RulesConfig rules = new RulesConfig(1, List.of(),
@@ -121,7 +121,7 @@ final class ValidationEngineTest {
         // Test that a profile requiring Java 99 produces BROKEN with real environment
         Platform platform = testPlatform(List.of());
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 99, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 99, 0, 0,
                 List.of(), List.of(), List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
 
@@ -137,7 +137,7 @@ final class ValidationEngineTest {
     void wrongMinecraftVersionReturnsBroken() {
         Platform platform = new TestPlatform(List.of(), "1.20.4", "Fabric", "0.16.5");
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(), List.of(), List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
 
@@ -149,9 +149,9 @@ final class ValidationEngineTest {
 
     @Test
     void wrongLoaderReturnsBroken() {
-        Platform platform = new TestPlatform(List.of(), "1.21.1", "NeoForge", "21.0.0");
+        Platform platform = new TestPlatform(List.of(), "1.18.2", "Forge", "40.3.12");
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(), List.of(), List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
 
@@ -165,7 +165,7 @@ final class ValidationEngineTest {
     void recommendedModMissingReturnsUnsupported() {
         Platform platform = testPlatform(List.of());
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(), List.of(new ModRule("modmenu", "Mod Menu", "", "")),
                 List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
@@ -181,7 +181,7 @@ final class ValidationEngineTest {
     void issuesHaveFixInstructions() {
         Platform platform = testPlatform(List.of());
         PackProfile profile = new PackProfile(1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 0, 0,
+                List.of("1.18.2"), List.of("fabric"), 17, 0, 0,
                 List.of(new ModRule("sodium", "Sodium", "", "")),
                 List.of(), List.of(), List.of());
         VartaConfig config = VartaConfig.defaults();
@@ -226,7 +226,7 @@ final class ValidationEngineTest {
     // --- Test helpers ---
 
     private static Platform testPlatform(List<ModInfo> mods) {
-        return new TestPlatform(mods, "1.21.1", "Fabric", "0.16.5");
+        return new TestPlatform(mods, "1.18.2", "Fabric", "0.16.5");
     }
 
     private static class TestPlatform implements Platform {
@@ -242,7 +242,7 @@ final class ValidationEngineTest {
             this.loaderVersion = loaderVersion;
         }
 
-        protected int javaMajor() { return 21; }
+        protected int javaMajor() { return 17; }
 
         @Override public String getLoaderName() { return loaderName; }
         @Override public String getLoaderVersion() { return loaderVersion; }

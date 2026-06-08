@@ -31,9 +31,9 @@ final class RuleEvaluatorTest {
         List<Issue> issues = evaluator.evaluate(rules, ctx);
 
         assertEquals(1, issues.size());
-        assertEquals(Severity.CRITICAL, issues.getFirst().severity());
-        assertTrue(issues.getFirst().blocksContinue());
-        assertTrue(issues.getFirst().fixInstruction().contains("Remove"));
+        assertEquals(Severity.CRITICAL, issues.get(0).severity());
+        assertTrue(issues.get(0).blocksContinue());
+        assertTrue(issues.get(0).fixInstruction().contains("Remove"));
     }
 
     @Test
@@ -62,7 +62,7 @@ final class RuleEvaluatorTest {
         List<Issue> issues = evaluator.evaluate(rules, ctx);
 
         assertEquals(1, issues.size());
-        assertEquals(Severity.ERROR, issues.getFirst().severity());
+        assertEquals(Severity.ERROR, issues.get(0).severity());
     }
 
     @Test
@@ -91,8 +91,8 @@ final class RuleEvaluatorTest {
         List<Issue> issues = evaluator.evaluate(rules, ctx);
 
         assertEquals(1, issues.size());
-        assertEquals(Severity.WARNING, issues.getFirst().severity());
-        assertFalse(issues.getFirst().blocksContinue());
+        assertEquals(Severity.WARNING, issues.get(0).severity());
+        assertFalse(issues.get(0).blocksContinue());
     }
 
     @Test
@@ -107,14 +107,14 @@ final class RuleEvaluatorTest {
         List<Issue> issues = evaluator.evaluate(rules, ctx);
 
         assertEquals(1, issues.size());
-        assertTrue(issues.getFirst().title().contains("Suspicious"));
+        assertTrue(issues.get(0).title().contains("Suspicious"));
     }
 
     private static CheckContext context(List<ModInfo> mods) {
         Map<String, ModInfo> installed = mods.stream()
                 .collect(Collectors.toMap(m -> m.id().toLowerCase(Locale.ROOT), m -> m));
         EnvironmentInfo env = new EnvironmentInfo(
-                "1.21.1", "Fabric", "0.16.5", "21", 21,
+                "1.18.2", "Fabric", "0.16.5", "17", 17,
                 "Linux", "test", 8192, "/tmp/vartapack-test");
         return new CheckContext(VartaConfig.defaults(), PackProfile.defaults(), null, env, installed);
     }

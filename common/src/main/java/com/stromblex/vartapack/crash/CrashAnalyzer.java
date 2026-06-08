@@ -60,7 +60,7 @@ public final class CrashAnalyzer {
                     "Java version mismatch",
                     Severity.CRITICAL, "(?i)(class file version \\d+\\.\\d+|UnsupportedClassVersionError|has been compiled by a more recent version)",
                     "The game or a mod requires a newer Java version than what is currently running.",
-                    "Update to the required Java version (likely Java 21 for modern modpacks).", 0.9f),
+                    "Update to the Java version required by the modpack.", 0.9f),
 
             new CrashPattern("loader.dependency.error",
                     "Loader dependency resolution failure",

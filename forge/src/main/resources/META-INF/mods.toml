@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[4,)"
+loaderVersion = "[40,)"
 license = "MIT"
 issueTrackerURL = "https://github.com/stromblex/VartaPack/issues"
 
@@ -11,19 +11,19 @@ description = '''
 A support report and diagnostics tool for Minecraft modpack authors.
 '''
 authors = "stromblex"
-logoFile = "assets/vartapack/icon.png"
+logoFile = "vartapack-icon.png"
 displayURL = "https://github.com/stromblex/VartaPack"
 
 [[dependencies.vartapack]]
-modId = "neoforge"
-type = "required"
-versionRange = "[26.1,)"
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.vartapack]]
 modId = "minecraft"
-type = "required"
+mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "CLIENT"

@@ -154,9 +154,9 @@ def main():
     parser.add_argument("--changelog", default=None, help="Changelog text (markdown)")
     parser.add_argument("--changelog-file", default=None, help="Read changelog text from a file")
     parser.add_argument("--platform", choices=["modrinth", "curseforge", "both"], default="both")
-    parser.add_argument("--loader", choices=["fabric", "neoforge", "both"], default="both")
-    parser.add_argument("--changelog-neoforge", default=None, help="Separate changelog for NeoForge (optional)")
-    parser.add_argument("--changelog-neoforge-file", default=None, help="Read separate NeoForge changelog from a file")
+    parser.add_argument("--loader", choices=["fabric", "forge", "both"], default="both")
+    parser.add_argument("--changelog-forge", default=None, help="Separate changelog for Forge (optional)")
+    parser.add_argument("--changelog-forge-file", default=None, help="Read separate Forge changelog from a file")
     args = parser.parse_args()
 
     if args.changelog is None and args.changelog_file is None:
@@ -165,14 +165,14 @@ def main():
     secrets = load_json(SCRIPT_DIR / "secrets.json")
     config = load_json(SCRIPT_DIR / "config.json")
 
-    loaders = ["fabric", "neoforge"] if args.loader == "both" else [args.loader]
+    loaders = ["fabric", "forge"] if args.loader == "both" else [args.loader]
     platforms = ["modrinth", "curseforge"] if args.platform == "both" else [args.platform]
 
     success = True
     for loader in loaders:
         changelog = read_text_arg(args.changelog, args.changelog_file)
-        if loader == "neoforge" and (args.changelog_neoforge is not None or args.changelog_neoforge_file is not None):
-            changelog = read_text_arg(args.changelog_neoforge, args.changelog_neoforge_file)
+        if loader == "forge" and (args.changelog_forge is not None or args.changelog_forge_file is not None):
+            changelog = read_text_arg(args.changelog_forge, args.changelog_forge_file)
 
         for platform in platforms:
             if platform == "modrinth":

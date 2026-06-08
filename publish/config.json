@@ -2,8 +2,8 @@
   "modrinth": {
     "project_id": "C1UZdEDT",
     "loaders_fabric": ["fabric"],
-    "loaders_neoforge": ["neoforge"],
-    "game_versions": ["26.1", "26.1.1", "26.1.2"],
+    "loaders_forge": ["forge"],
+    "game_versions": ["1.18.2"],
     "version_type": "release",
     "featured": true,
     "client_side": "required",
@@ -11,15 +11,15 @@
   },
   "curseforge": {
     "project_id": "1552180",
-    "game_versions": [15933, 16021, 16082, 14454],
+    "game_versions": [9008, 8326],
     "environment": [9638],
     "loaders_fabric": [7499],
-    "loaders_neoforge": [10150],
+    "loaders_forge": [7498],
     "release_type": "release"
   },
   "jar_paths": {
     "fabric": "fabric/build/libs/vartapack-fabric-mc{mc_version}-{version}.jar",
-    "neoforge": "neoforge/build/libs/vartapack-neoforge-mc{mc_version}-{version}.jar"
+    "forge": "forge/build/libs/vartapack-forge-mc{mc_version}-{version}.jar"
   },
-  "mc_version": "26.1"
+  "mc_version": "1.18.2"
 }

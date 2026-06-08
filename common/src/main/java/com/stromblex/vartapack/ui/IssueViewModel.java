@@ -14,7 +14,7 @@ import com.stromblex.vartapack.validation.ValidationResult;
 import java.util.List;
 
 /**
- * Pure-data view model shared between Fabric/NeoForge screens.
+ * Pure-data view model shared between Fabric/Forge screens.
  * Loader-specific screen classes read this and render with their own widgets.
  */
 public final class IssueViewModel {

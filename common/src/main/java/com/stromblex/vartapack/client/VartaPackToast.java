@@ -18,13 +18,13 @@ public final class VartaPackToast {
     private static final long TOAST_DURATION_MS = 8000;
 
     public static void show(Minecraft mc, Component title, Component message, Severity severity) {
-        if (mc == null || mc.getToastManager() == null) return;
+        if (mc == null || mc.getToasts() == null) return;
         try {
-            SystemToast.SystemToastId id = switch (severity) {
-                case CRITICAL, ERROR -> SystemToast.SystemToastId.WORLD_BACKUP;
-                case WARNING, INFO -> SystemToast.SystemToastId.PERIODIC_NOTIFICATION;
+            SystemToast.SystemToastIds id = switch (severity) {
+                case CRITICAL, ERROR -> SystemToast.SystemToastIds.WORLD_BACKUP;
+                case WARNING, INFO -> SystemToast.SystemToastIds.PERIODIC_NOTIFICATION;
             };
-            SystemToast.addOrUpdate(mc.getToastManager(), id, title, message);
+            SystemToast.addOrUpdate(mc.getToasts(), id, title, message);
             visibleUntil = System.currentTimeMillis() + TOAST_DURATION_MS;
         } catch (Throwable t) {
             VartaPack.LOGGER.warn("Failed to show VartaPack toast: {}", t.toString());

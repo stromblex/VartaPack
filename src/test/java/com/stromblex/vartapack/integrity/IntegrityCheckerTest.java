@@ -52,8 +52,8 @@ final class IntegrityCheckerTest {
         List<Issue> issues = checker.check(manifest, gameDir);
 
         assertEquals(1, issues.size());
-        assertEquals(Severity.WARNING, issues.getFirst().severity());
-        assertTrue(issues.getFirst().title().contains("modified"));
+        assertEquals(Severity.WARNING, issues.get(0).severity());
+        assertTrue(issues.get(0).title().contains("modified"));
     }
 
     @Test
@@ -68,8 +68,8 @@ final class IntegrityCheckerTest {
         List<Issue> issues = checker.check(manifest, gameDir);
 
         assertEquals(1, issues.size());
-        assertEquals(Severity.ERROR, issues.getFirst().severity());
-        assertTrue(issues.getFirst().title().contains("Missing"));
+        assertEquals(Severity.ERROR, issues.get(0).severity());
+        assertTrue(issues.get(0).title().contains("Missing"));
     }
 
     @Test

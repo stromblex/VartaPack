@@ -31,8 +31,8 @@ final class ChecksTest {
         List<CheckResult> results = new ExtraModsCheck().run(context);
 
         assertEquals(1, results.size());
-        assertTrue(results.getFirst().technicalDetails().contains("journeymap"));
-        assertFalse(results.getFirst().technicalDetails().contains("fabric-api-base"));
+        assertTrue(results.get(0).technicalDetails().contains("journeymap"));
+        assertFalse(results.get(0).technicalDetails().contains("fabric-api-base"));
     }
 
     @Test
@@ -45,7 +45,7 @@ final class ChecksTest {
         CheckContext context = context(config, profile(List.of("sodium"), false),
                 List.of(new ModInfo("journeymap", "JourneyMap", "1.0.0", "")));
 
-        CheckResult result = new ExtraModsCheck().run(context).getFirst();
+        CheckResult result = new ExtraModsCheck().run(context).get(0);
 
         assertEquals(Severity.ERROR, result.severity());
         assertTrue(result.visibleToPlayer());
@@ -74,7 +74,7 @@ final class ChecksTest {
         Map<String, ModInfo> installed = mods.stream()
                 .collect(Collectors.toMap(m -> m.id().toLowerCase(Locale.ROOT), m -> m));
         EnvironmentInfo env = new EnvironmentInfo(
-                "1.21.1", "Fabric", "0.16.5", "21", 21,
+                "1.18.2", "Fabric", "0.16.5", "17", 17,
                 "Linux", "test", 8192, "/tmp/vartapack-test");
         return new CheckContext(config, profile, null, env, installed);
     }
@@ -82,14 +82,14 @@ final class ChecksTest {
     private static PackProfile profile(List<String> allowed, boolean includeRequired) {
         return includeRequired ? requiredProfile(">=1.4 <2.0") : new PackProfile(
                 1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 4096, 6144,
+                List.of("1.18.2"), List.of("fabric"), 17, 4096, 6144,
                 List.of(), List.of(), List.of(), allowed);
     }
 
     private static PackProfile requiredProfile(String version) {
         return new PackProfile(
                 1, "test", "Test", "1.0.0", "", "",
-                List.of("1.21.1"), List.of("fabric"), 21, 4096, 6144,
+                List.of("1.18.2"), List.of("fabric"), 17, 4096, 6144,
                 List.of(new ModRule("sodium", "Sodium", version, "renderer")),
                 List.of(), List.of(), List.of());
     }

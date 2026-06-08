@@ -1,46 +1,43 @@
-package com.stromblex.vartapack.neoforge;
+package com.stromblex.vartapack.forge;
 
 import com.stromblex.vartapack.api.ModInfo;
 import com.stromblex.vartapack.api.Platform;
 import net.minecraft.SharedConstants;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforgespi.language.IModInfo;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.forgespi.language.IModInfo;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class NeoForgePlatform implements Platform {
+public final class ForgePlatform implements Platform {
 
-    @Override public String getLoaderName() { return "NeoForge"; }
+    @Override public String getLoaderName() { return "Forge"; }
 
     @Override
     public String getLoaderVersion() {
         ModList list = ModList.get();
         if (list != null) {
-            var c = list.getModContainerById("neoforge");
+            var c = list.getModContainerById("forge");
             if (c.isPresent()) return c.get().getModInfo().getVersion().toString();
         }
         try {
-            FMLLoader loader = FMLLoader.getCurrentOrNull();
-            if (loader != null) return loader.getVersionInfo().neoForgeVersion();
+            return FMLLoader.versionInfo().forgeVersion();
         }
         catch (Throwable t) { return "unknown"; }
-        return "unknown";
     }
 
     @Override
     public String getMinecraftVersion() {
         try {
-            FMLLoader loader = FMLLoader.getCurrentOrNull();
-            if (loader != null) return loader.getVersionInfo().mcVersion();
+            return FMLLoader.versionInfo().mcVersion();
         }
         catch (Throwable ignored) { }
-        try { return SharedConstants.getCurrentVersion().id(); }
+        try { return SharedConstants.getCurrentVersion().getName(); }
         catch (Throwable t) { return "unknown"; }
     }
 
@@ -79,5 +76,5 @@ public final class NeoForgePlatform implements Platform {
         });
     }
 
-    @Override public boolean isClientEnvironment() { return FMLEnvironment.getDist().isClient(); }
+    @Override public boolean isClientEnvironment() { return FMLEnvironment.dist.isClient(); }
 }
