@@ -11,6 +11,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.net.URI;
@@ -1062,7 +1063,9 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (layoutMode == VartaLayoutMode.NARROW && mouseY >= tabY && mouseY <= tabY + tabHeight) {
             if (mouseX >= issuesTabX && mouseX <= issuesTabX + tabWidth) {
                 narrowTab = NarrowTab.ISSUES;
@@ -1076,15 +1079,17 @@ public final class VartaPackIssuesScreen extends Screen {
             }
         }
         if (isActionPaneVisible() && isInsideActionButtons(mouseX, mouseY)) {
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(event, doubleClick);
         }
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (isActionPaneVisible() && isInsideActionButtons(mouseX, mouseY)) {
-            return super.mouseReleased(mouseX, mouseY, button);
+            return super.mouseReleased(event);
         }
         return false;
     }

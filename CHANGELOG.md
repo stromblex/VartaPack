@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.2.2
+
+* Added support for Minecraft 1.21.9.
+* Updated Minecraft compatibility ranges and publishing metadata for the 1.21.9 release.
+* Updated internal modding dependencies and Gradle tooling for current 1.21.9 releases.
+* Updated client input and keybinding integration for current Minecraft APIs.
+* No config changes are required.
+
 ## 1.1.2.1
 
 * Added support for Minecraft 1.21.8.

@@ -2,6 +2,7 @@ package com.stromblex.vartapack.neoforge;
 
 import com.stromblex.vartapack.api.ModInfo;
 import com.stromblex.vartapack.api.Platform;
+import net.minecraft.SharedConstants;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
@@ -24,13 +25,22 @@ public final class NeoForgePlatform implements Platform {
             var c = list.getModContainerById("neoforge");
             if (c.isPresent()) return c.get().getModInfo().getVersion().toString();
         }
-        try { return FMLLoader.versionInfo().neoForgeVersion(); }
+        try {
+            FMLLoader loader = FMLLoader.getCurrentOrNull();
+            if (loader != null) return loader.getVersionInfo().neoForgeVersion();
+        }
         catch (Throwable t) { return "unknown"; }
+        return "unknown";
     }
 
     @Override
     public String getMinecraftVersion() {
-        try { return FMLLoader.versionInfo().mcVersion(); }
+        try {
+            FMLLoader loader = FMLLoader.getCurrentOrNull();
+            if (loader != null) return loader.getVersionInfo().mcVersion();
+        }
+        catch (Throwable ignored) { }
+        try { return SharedConstants.getCurrentVersion().id(); }
         catch (Throwable t) { return "unknown"; }
     }
 
@@ -69,5 +79,5 @@ public final class NeoForgePlatform implements Platform {
         });
     }
 
-    @Override public boolean isClientEnvironment() { return FMLEnvironment.dist.isClient(); }
+    @Override public boolean isClientEnvironment() { return FMLEnvironment.getDist().isClient(); }
 }

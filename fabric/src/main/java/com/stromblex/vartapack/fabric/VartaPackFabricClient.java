@@ -13,6 +13,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
@@ -23,6 +24,8 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     private boolean startupDone = false;
     private boolean wasMouseDown = false;
     private boolean wasKeyDown = false;
+    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+            ResourceLocation.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
 
     private KeyMapping openKey;
 
@@ -34,7 +37,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
                 CommonTexts.KEY_OPEN_SCREEN,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
-                CommonTexts.KEY_CATEGORY
+                KEY_CATEGORY
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
@@ -92,9 +95,8 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     }
 
     private void handleKeybind(Minecraft mc) {
-        long window = mc.getWindow().getWindow();
         int keyCode = openKey.key.getValue();
-        boolean keyDown = InputConstants.isKeyDown(window, keyCode);
+        boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
         if (keyDown && !wasKeyDown) {
             if (!(mc.screen instanceof VartaPackIssuesScreen)
                     && !(mc.screen != null && mc.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox)) {
@@ -123,7 +125,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
             wasMouseDown = false;
             return;
         }
-        long windowHandle = mc.getWindow().getWindow();
+        long windowHandle = mc.getWindow().handle();
         boolean mouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
         if (mouseDown && !wasMouseDown) {
             double rawX = mc.mouseHandler.xpos();

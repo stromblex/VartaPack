@@ -11,6 +11,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,6 +28,8 @@ public final class VartaPackNeoForgeClient {
     private static boolean wasMouseDown = false;
     private static boolean wasKeyDown = false;
     private static final NeoForgeClipboardService CLIPBOARD = new NeoForgeClipboardService();
+    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+            ResourceLocation.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
 
     private static KeyMapping openKey;
 
@@ -36,7 +39,7 @@ public final class VartaPackNeoForgeClient {
                 CommonTexts.KEY_OPEN_SCREEN,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
-                CommonTexts.KEY_CATEGORY
+                KEY_CATEGORY
         );
         modBus.addListener(VartaPackNeoForgeClient::registerKeys);
         NeoForge.EVENT_BUS.register(VartaPackNeoForgeClient.class);
@@ -100,9 +103,8 @@ public final class VartaPackNeoForgeClient {
     }
 
     private static void handleKeybind(Minecraft mc) {
-        long window = mc.getWindow().getWindow();
         int keyCode = openKey.getKey().getValue();
-        boolean keyDown = InputConstants.isKeyDown(window, keyCode);
+        boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
         if (keyDown && !wasKeyDown) {
             if (!(mc.screen instanceof VartaPackIssuesScreen)
                     && !(mc.screen != null && mc.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox)) {
@@ -131,7 +133,7 @@ public final class VartaPackNeoForgeClient {
             wasMouseDown = false;
             return;
         }
-        long windowHandle = mc.getWindow().getWindow();
+        long windowHandle = mc.getWindow().handle();
         boolean mouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
         if (mouseDown && !wasMouseDown) {
             double rawX = mc.mouseHandler.xpos();

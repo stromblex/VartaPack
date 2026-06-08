@@ -52,5 +52,6 @@
     "vartapack.severity.warning": "Warning",
     "vartapack.severity.error": "Error",
     "vartapack.severity.critical": "Critical",
-    "key.vartapack.open": "Open VartaPack"
+    "key.vartapack.open": "Open VartaPack",
+    "key.category.vartapack.main": "VartaPack"
 }
