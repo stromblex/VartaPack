@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.1.3-mc1.20.1
+
+* Added support for Minecraft 1.20.1.
+* Updated Fabric and Forge release metadata for the 1.20.1 backport line.
+* Updated internal loader and build tooling for Minecraft 1.20.1.
+* Rebuilt the current keybind and startup screen fixes for Minecraft 1.20.1.
+* No config changes are required.
+
+## 1.1.3-mc1.19.2
+
+* Added support for Minecraft 1.19.2.
+* Updated Fabric and Forge release metadata for the 1.19.2 backport line.
+* Rebuilt the current keybind and startup screen fixes for Minecraft 1.19.2.
+* No config changes are required.
+
+## 1.1.3-mc1.18.2
+
+* Limited the VartaPack keybind and startup toast actions to the main menu.
+* Prevented the issues screen from opening over gameplay, inventory, chat, and other mod screens.
+* Rebuilt the 1.18.2 files for the current Fabric and Forge backport line.
+* No config changes are required.
+
+## 1.1.2-mc1.18.2
+
+* Added support for Minecraft 1.18.2.
+* Added Forge support for the 1.18.2 backport line.
+* Backported current validation, diagnostics, and support report behavior.
+* Updated loader metadata and build tooling for the 1.18.2 release line.
+* No config changes are required.
+
 ## 1.1.2.5
 
 * Added support for Minecraft 26.1, 26.1.1, and 26.1.2.
