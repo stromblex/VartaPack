@@ -7,7 +7,7 @@ import com.stromblex.vartapack.config.ConfigManager;
 import com.stromblex.vartapack.config.VartaConfig;
 import com.stromblex.vartapack.ui.CommonTexts;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -31,7 +31,7 @@ public final class VartaPackConfigScreen extends Screen {
     private List<SectionLayout> sectionLayouts = List.of();
 
     public VartaPackConfigScreen(Screen parent, ClipboardService clipboard) {
-        super(Component.translatable(CommonTexts.CONFIG_TITLE));
+        super(VartaComponents.translatable(CommonTexts.CONFIG_TITLE));
         this.parent = parent;
         this.clipboard = clipboard;
         this.draft = VartaPack.config();
@@ -174,23 +174,23 @@ public final class VartaPackConfigScreen extends Screen {
         )));
 
         sections.add(new SettingsSection("Tools", List.of(
-                buttonRow(Component.translatable(CommonTexts.BTN_RESET_DEFAULTS), List.of("Defaults"), VartaPackButton.Style.SUBTLE, b -> {
+                buttonRow(VartaComponents.translatable(CommonTexts.BTN_RESET_DEFAULTS), List.of("Defaults"), VartaPackButton.Style.SUBTLE, b -> {
                     draft = VartaConfig.defaults();
                     refreshWidgets();
                 }),
-                buttonRow(Component.translatable(CommonTexts.BTN_PROFILE_WIZARD), List.of("Wizard"), VartaPackButton.Style.SECONDARY,
+                buttonRow(VartaComponents.translatable(CommonTexts.BTN_PROFILE_WIZARD), List.of("Wizard"), VartaPackButton.Style.SECONDARY,
                         b -> Minecraft.getInstance().setScreen(new VartaPackProfileWizardScreen(this))),
-                infoRow(Component.literal("Responsive UI"), List.of("UI"), "AUTO")
+                infoRow(VartaComponents.literal("Responsive UI"), List.of("UI"), "AUTO")
         )));
         return sections;
     }
 
     private SettingRow toggleRow(String key, List<String> compactLabels, boolean initial, BooleanSetter setter) {
-        return new SettingRow(Component.translatable(key), compactLabels, valueLabel(initial), VartaPackButton.Style.SECONDARY,
+        return new SettingRow(VartaComponents.translatable(key), compactLabels, valueLabel(initial), VartaPackButton.Style.SECONDARY,
                 b -> {
                     boolean next = !currentToggleValue(b.getMessage().getString());
                     setter.set(next);
-                    b.setMessage(rowMessage(Component.translatable(key), compactLabels, valueLabel(next), b.getWidth()));
+                    b.setMessage(rowMessage(VartaComponents.translatable(key), compactLabels, valueLabel(next), b.getWidth()));
                 });
     }
 
@@ -200,12 +200,12 @@ public final class VartaPackConfigScreen extends Screen {
 
     private SettingRow severityRow(String key, List<String> compactLabels, Severity initial, SeveritySetter setter) {
         final Severity[] value = {initial};
-        return new SettingRow(Component.translatable(key), compactLabels, value[0].name(), severityStyle(value[0]),
+        return new SettingRow(VartaComponents.translatable(key), compactLabels, value[0].name(), severityStyle(value[0]),
                 b -> {
                     Severity[] values = Severity.values();
                     value[0] = values[(value[0].ordinal() + 1) % values.length];
                     setter.set(value[0]);
-                    b.setMessage(rowMessage(Component.translatable(key), compactLabels, value[0].name(), b.getWidth()));
+                    b.setMessage(rowMessage(VartaComponents.translatable(key), compactLabels, value[0].name(), b.getWidth()));
                 });
     }
 
@@ -249,7 +249,7 @@ public final class VartaPackConfigScreen extends Screen {
             candidates.add(compact + ": " + value);
         }
         return VartaButtonHelper.fittingLabel(this.font, width,
-                Component.literal(label.getString() + ": " + value), candidates);
+                VartaComponents.literal(label.getString() + ": " + value), candidates);
     }
 
     private void addBottomButtons() {
@@ -261,12 +261,12 @@ public final class VartaPackConfigScreen extends Screen {
         int x = stack ? bottomBounds.x() + (bottomBounds.width() - buttonWidth) / 2 : bottomBounds.x() + (bottomBounds.width() - buttonWidth * 2 - gap) / 2;
         int y = stack ? bottomBounds.y() + 2 : bottomBounds.y() + 5;
         addRenderableWidget(VartaPackButton.of(x, y, buttonWidth, 24,
-                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_SAVE)),
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, VartaComponents.translatable(CommonTexts.BTN_SAVE)),
                 b -> saveAndClose(), VartaPackButton.Style.PRIMARY));
         int backX = stack ? x : x + buttonWidth + gap;
         int backY = stack ? y + 28 : y;
         addRenderableWidget(VartaPackButton.of(backX, backY, buttonWidth, 24,
-                VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_BACK)),
+                VartaButtonHelper.fittingLabel(this.font, buttonWidth, VartaComponents.translatable(CommonTexts.BTN_BACK)),
                 b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
     }
 
@@ -290,30 +290,30 @@ public final class VartaPackConfigScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         renderBase(g);
         renderSections(g);
         scrollArea.renderScrollbar(g);
-        super.extractRenderState(g, mouseX, mouseY, partialTick);
+        super.render(g, mouseX, mouseY, partialTick);
     }
 
-    private void renderBase(GuiGraphicsExtractor g) {
+    private void renderBase(GuiGraphics g) {
         g.fill(0, 0, width, height, 0xFF05070B);
         g.fill(0, 0, width, height, 0xFF0B1018);
         g.fill(0, 0, width, 1, 0xFF566477);
         g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
-        g.centeredText(this.font, Component.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8,
+        g.drawCenteredString(this.font, VartaComponents.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8,
                 VartaUiLayout.textColor(0xFFFFFF));
-        g.centeredText(this.font, Component.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22,
+        g.drawCenteredString(this.font, VartaComponents.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22,
                 VartaUiLayout.textColor(0xD4DCE8));
         g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
     }
 
-    private void renderSections(GuiGraphicsExtractor g) {
+    private void renderSections(GuiGraphics g) {
         scrollArea.enableScissor(g);
         int scroll = scrollArea.scroll();
         for (SectionLayout layout : sectionLayouts) {
@@ -322,10 +322,10 @@ public final class VartaPackConfigScreen extends Screen {
             int y = bounds.y() - scroll;
             g.fill(x, y, x + bounds.width(), y + bounds.height(), 0xFF101722);
             g.fill(x, y, x + bounds.width(), y + 1, 0xFF566477);
-            g.text(this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
-                    x + SECTION_PADDING, y + 7, VartaUiLayout.textColor(0xFFFFFF), true);
+            g.drawString(this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
+                    x + SECTION_PADDING, y + 7, VartaUiLayout.textColor(0xFFFFFF));
         }
-        g.disableScissor();
+        VartaScissor.disable();
     }
 
     @Override

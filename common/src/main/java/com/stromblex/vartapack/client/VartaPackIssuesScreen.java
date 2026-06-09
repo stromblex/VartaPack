@@ -8,11 +8,10 @@ import com.stromblex.vartapack.ui.IssueViewModel;
 import com.stromblex.vartapack.util.UrlUtil;
 import com.stromblex.vartapack.validation.PackStatus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.List;
 
 /**
  * Vanilla-styled, loader-agnostic VartaPack issues screen.
- * Lives in common source dir; both Fabric and NeoForge compile it via {@code srcDir}.
+ * Lives in common source dir; both Fabric and Forge compile it via {@code srcDir}.
  */
 public final class VartaPackIssuesScreen extends Screen {
     private static final int MIN_ACTION_PANEL_WIDTH = 150;
@@ -79,7 +78,7 @@ public final class VartaPackIssuesScreen extends Screen {
     private int tabWidth;
 
     public VartaPackIssuesScreen(Screen parent, IssueViewModel vm, ClipboardService clipboard) {
-        super(Component.translatable(CommonTexts.SCREEN_TITLE));
+        super(VartaComponents.translatable(CommonTexts.SCREEN_TITLE));
         this.parent = parent;
         this.vm = vm;
         this.clipboard = clipboard;
@@ -104,7 +103,7 @@ public final class VartaPackIssuesScreen extends Screen {
         List<ActionSpec> actions = new ArrayList<>();
 
         actions.add(new ActionSpec(ActionKind.COPY_REPORT,
-                Component.translatable(CommonTexts.BTN_COPY_REPORT),
+                VartaComponents.translatable(CommonTexts.BTN_COPY_REPORT),
                 b -> {
                     clipboard.copy(vm.buildMarkdownReport());
                     showCopiedToast();
@@ -112,7 +111,7 @@ public final class VartaPackIssuesScreen extends Screen {
                 VartaPackButton.Style.PRIMARY));
 
         actions.add(new ActionSpec(ActionKind.COPY_JSON,
-                Component.translatable(CommonTexts.BTN_COPY_JSON),
+                VartaComponents.translatable(CommonTexts.BTN_COPY_JSON),
                 b -> {
                     clipboard.copy(vm.buildJsonReport());
                     showCopiedToast();
@@ -121,27 +120,27 @@ public final class VartaPackIssuesScreen extends Screen {
 
         if (VartaPack.platform() != null) {
             actions.add(new ActionSpec(ActionKind.OPEN_DIR,
-                    Component.translatable(CommonTexts.BTN_OPEN_GAME_DIR),
+                    VartaComponents.translatable(CommonTexts.BTN_OPEN_GAME_DIR),
                     b -> Util.getPlatform().openFile(VartaPack.platform().getGameDirectory().toFile()),
                     VartaPackButton.Style.SECONDARY));
         }
 
         if (UrlUtil.isSafeWebUrl(vm.supportUrl())) {
             actions.add(new ActionSpec(ActionKind.OPEN_SUPPORT,
-                    Component.translatable(CommonTexts.BTN_OPEN_SUPPORT),
+                    VartaComponents.translatable(CommonTexts.BTN_OPEN_SUPPORT),
                     b -> Util.getPlatform().openUri(URI.create(vm.supportUrl())),
                     VartaPackButton.Style.SUBTLE));
         }
 
         if (!VartaPack.shouldBlockContinue()) {
             actions.add(new ActionSpec(ActionKind.CONTINUE,
-                    Component.translatable(CommonTexts.BTN_CONTINUE),
+                    VartaComponents.translatable(CommonTexts.BTN_CONTINUE),
                     b -> onClose(),
                     VartaPackButton.Style.SUBTLE));
         }
 
         actions.add(new ActionSpec(ActionKind.SETTINGS,
-                Component.translatable(CommonTexts.BTN_SETTINGS),
+                VartaComponents.translatable(CommonTexts.BTN_SETTINGS),
                 b -> Minecraft.getInstance().setScreen(new VartaPackConfigScreen(this, clipboard)),
                 VartaPackButton.Style.SUBTLE));
 
@@ -151,8 +150,8 @@ public final class VartaPackIssuesScreen extends Screen {
     private void showCopiedToast() {
         VartaPackToast.show(
                 Minecraft.getInstance(),
-                Component.translatable(CommonTexts.TOAST_TITLE),
-                Component.translatable(CommonTexts.REPORT_COPIED),
+                VartaComponents.translatable(CommonTexts.TOAST_TITLE),
+                VartaComponents.translatable(CommonTexts.REPORT_COPIED),
                 Severity.INFO);
     }
 
@@ -486,11 +485,11 @@ public final class VartaPackIssuesScreen extends Screen {
         List<String> candidates = actionLabelCandidates(spec);
         for (String candidate : candidates) {
             if (this.font.width(candidate) <= textWidth) {
-                return candidate.equals(spec.label().getString()) ? spec.label() : Component.literal(candidate);
+                return candidate.equals(spec.label().getString()) ? spec.label() : VartaComponents.literal(candidate);
             }
         }
         String shortest = candidates.isEmpty() ? spec.label().getString() : candidates.get(candidates.size() - 1);
-        return Component.literal(trim(shortest, textWidth));
+        return VartaComponents.literal(trim(shortest, textWidth));
     }
 
     private List<String> actionLabelCandidates(ActionSpec spec) {
@@ -557,11 +556,11 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         renderBase(g);
         renderHeader(g);
         if (layoutMode == VartaLayoutMode.NARROW) {
@@ -581,7 +580,7 @@ public final class VartaPackIssuesScreen extends Screen {
         renderActionWidgets(g, mouseX, mouseY, partialTick);
     }
 
-    private void renderBase(GuiGraphicsExtractor g) {
+    private void renderBase(GuiGraphics g) {
         g.fill(0, 0, width, height, 0xFF05070B);
         g.fill(0, 0, width, height, 0xFF0B1018);
         g.fill(0, 0, width, 1, 0xFF566477);
@@ -591,18 +590,18 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderHeader(GuiGraphicsExtractor g) {
+    private void renderHeader(GuiGraphics g) {
         int titleY = headerTop;
-        g.text(this.font, Component.translatable(CommonTexts.SCREEN_TITLE), contentX, titleY, VartaUiLayout.textColor(0xFFFFFF), true);
+        g.drawString(this.font, VartaComponents.translatable(CommonTexts.SCREEN_TITLE), contentX, titleY, VartaUiLayout.textColor(0xFFFFFF));
 
         PackStatus status = vm.packStatus();
         String statusText = "Status: " + status.displayName().toUpperCase();
         int statusColor = colorForStatus(status);
-        g.text(this.font, trim(statusText, headerTextWidth()), contentX, titleY + 12, VartaUiLayout.textColor(statusColor), true);
+        g.drawString(this.font, trim(statusText, headerTextWidth()), contentX, titleY + 12, VartaUiLayout.textColor(statusColor));
 
         String pack = vm.packName().isBlank() ? "" : vm.packName() + " (v" + vm.profileVersion() + ")";
         if (!pack.isEmpty()) {
-            g.text(this.font, trim(pack, headerTextWidth()), contentX, titleY + 25, VartaUiLayout.textColor(0xF0F4FA), true);
+            g.drawString(this.font, trim(pack, headerTextWidth()), contentX, titleY + 25, VartaUiLayout.textColor(0xF0F4FA));
         }
 
         boolean compactCounters = layoutMode != VartaLayoutMode.NORMAL;
@@ -621,7 +620,7 @@ public final class VartaPackIssuesScreen extends Screen {
         return Math.max(40, counterLeft - contentX - 12);
     }
 
-    private void renderCounterPillsRightAligned(GuiGraphicsExtractor g, int right, int y, boolean compact) {
+    private void renderCounterPillsRightAligned(GuiGraphics g, int right, int y, boolean compact) {
         int x = right;
         List<Counter> counters = counters();
         for (int i = counters.size() - 1; i >= 0; i--) {
@@ -630,7 +629,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderCounterPillsWrapped(GuiGraphicsExtractor g, int x, int y, int right, boolean compact) {
+    private void renderCounterPillsWrapped(GuiGraphics g, int x, int y, int right, boolean compact) {
         int lineX = x;
         int lineY = y;
         int lineHeight = layoutMode == VartaLayoutMode.NARROW ? 14 : 18;
@@ -645,7 +644,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderNarrowTabs(GuiGraphicsExtractor g) {
+    private void renderNarrowTabs(GuiGraphics g) {
         drawTab(g, issuesTabX, tabY, tabWidth, "Issues", narrowTab == NarrowTab.ISSUES);
         drawTab(g, actionsTabX, tabY, tabWidth, "Actions", narrowTab == NarrowTab.ACTIONS);
         int dividerY = tabY + tabHeight + Math.max(3, edgePadding / 3);
@@ -653,28 +652,28 @@ public final class VartaPackIssuesScreen extends Screen {
         g.fill(contentX, contentY - 1, contentX + contentWidth, contentY, 0xFF151D29);
     }
 
-    private void drawTab(GuiGraphicsExtractor g, int x, int y, int tabWidth, String label, boolean active) {
+    private void drawTab(GuiGraphics g, int x, int y, int tabWidth, String label, boolean active) {
         int fill = active ? 0xFF263243 : 0xFF171E2A;
         int border = active ? 0xFF7E93AD : 0xFF3A4351;
         g.fill(x, y, x + tabWidth, y + tabHeight, fill);
         g.fill(x, y, x + tabWidth, y + 1, border);
-        g.centeredText(this.font, trim(label, tabWidth - 8), x + tabWidth / 2, y + 5,
+        g.drawCenteredString(this.font, trim(label, tabWidth - 8), x + tabWidth / 2, y + 5,
                 VartaUiLayout.textColor(active ? 0xFFFFFF : 0xB8C2D0));
     }
 
-    private int drawSummaryPill(GuiGraphicsExtractor g, int right, int y, Severity severity, int count, boolean compact) {
+    private int drawSummaryPill(GuiGraphics g, int right, int y, Severity severity, int count, boolean compact) {
         int pillWidth = counterPillWidth(severity, count, compact);
         int x = right - pillWidth;
         drawSummaryPillAt(g, x, y, pillWidth, severity, count, compact);
         return x - 4;
     }
 
-    private void drawSummaryPillAt(GuiGraphicsExtractor g, int x, int y, int pillWidth, Severity severity, int count, boolean compact) {
+    private void drawSummaryPillAt(GuiGraphics g, int x, int y, int pillWidth, Severity severity, int count, boolean compact) {
         String text = counterText(severity, count, compact);
         int color = colorFor(severity);
         g.fill(x, y, x + pillWidth, y + 14, 0xFF1B222D);
         g.fill(x, y, x + 2, y + 14, 0xFF000000 | color);
-        g.text(this.font, text, x + 6, y + 3, VartaUiLayout.textColor(0xFFFFFF), true);
+        g.drawString(this.font, text, x + 6, y + 3, VartaUiLayout.textColor(0xFFFFFF));
     }
 
     private int counterPillWidth(Severity severity, int count, boolean compact) {
@@ -702,8 +701,8 @@ public final class VartaPackIssuesScreen extends Screen {
         return count;
     }
 
-    private void renderActionPanel(GuiGraphicsExtractor g) {
-        g.text(this.font, "Actions", actionX + actionPadding(), actionTop + 4, VartaUiLayout.textColor(0xB8C2D0), true);
+    private void renderActionPanel(GuiGraphics g) {
+        g.drawString(this.font, "Actions", actionX + actionPadding(), actionTop + 4, VartaUiLayout.textColor(0xB8C2D0));
         if (actionStatusHeight > 0) {
             renderStatusBlock(g);
         }
@@ -718,8 +717,8 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderNarrowActionPanel(GuiGraphicsExtractor g) {
-        g.enableScissor(actionX, actionTop, actionX + actionWidth, actionBottom);
+    private void renderNarrowActionPanel(GuiGraphics g) {
+        VartaScissor.enable(actionX, actionTop, actionX + actionWidth, actionBottom);
 
         int padding = narrowActionPadding();
         int buttonWidth = narrowActionButtonWidth();
@@ -729,7 +728,7 @@ public final class VartaPackIssuesScreen extends Screen {
                 : actionX + (actionWidth - buttonWidth) / 2;
         int y = actionTop + 4 - actionScroll;
 
-        g.text(this.font, "Actions", actionX + padding, y, VartaUiLayout.textColor(0xB8C2D0), true);
+        g.drawString(this.font, "Actions", actionX + padding, y, VartaUiLayout.textColor(0xB8C2D0));
         if (horizontal) {
             int statusX = actionX + padding;
             int statusY = actionTop + 20 - actionScroll;
@@ -744,7 +743,7 @@ public final class VartaPackIssuesScreen extends Screen {
             renderNarrowActionGroupLabels(g, buttonX, statusY + narrowStatusHeight(false) + ACTION_GROUP_GAP + 12, buttonWidth);
         }
 
-        g.disableScissor();
+        VartaScissor.disable();
 
         if (maxActionScroll > 0 && actionBottom > actionTop) {
             int viewportHeight = actionBottom - actionTop;
@@ -756,7 +755,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderNarrowActionGroupLabels(GuiGraphicsExtractor g, int x, int y, int width) {
+    private void renderNarrowActionGroupLabels(GuiGraphics g, int x, int y, int width) {
         y = renderNarrowActionGroupLabel(g, "Reports", x, y, width, hasAction(ActionKind.COPY_REPORT) || hasAction(ActionKind.COPY_JSON));
         y += ACTION_GROUP_GAP;
         y = renderNarrowActionGroupLabel(g, "Files", x, y, width, hasAction(ActionKind.OPEN_DIR) || hasAction(ActionKind.OPEN_SUPPORT));
@@ -764,11 +763,11 @@ public final class VartaPackIssuesScreen extends Screen {
         renderNarrowActionGroupLabel(g, "Navigation", x, y, width, hasAction(ActionKind.CONTINUE) || hasAction(ActionKind.SETTINGS));
     }
 
-    private int renderNarrowActionGroupLabel(GuiGraphicsExtractor g, String label, int x, int y, int width, boolean present) {
+    private int renderNarrowActionGroupLabel(GuiGraphics g, String label, int x, int y, int width, boolean present) {
         if (!present) {
             return y;
         }
-        g.text(this.font, trim(label, width), x, y, VartaUiLayout.textColor(0x8FA1B8), true);
+        g.drawString(this.font, trim(label, width), x, y, VartaUiLayout.textColor(0x8FA1B8));
         int count = label.equals("Reports") ? actionCount(ActionKind.COPY_REPORT, ActionKind.COPY_JSON)
                 : label.equals("Files") ? actionCount(ActionKind.OPEN_DIR, ActionKind.OPEN_SUPPORT)
                 : actionCount(ActionKind.CONTINUE, ActionKind.SETTINGS);
@@ -799,7 +798,7 @@ public final class VartaPackIssuesScreen extends Screen {
         return count;
     }
 
-    private void renderNarrowStatusBlock(GuiGraphicsExtractor g, int x, int y, int width, int height) {
+    private void renderNarrowStatusBlock(GuiGraphics g, int x, int y, int width, int height) {
         g.fill(x, y, x + width, y + height, 0xFF171E2A);
         g.fill(x, y, x + 3, y + height, 0xFF000000 | colorForStatus(vm.packStatus()));
         g.fill(x, y, x + width, y + 1, 0xFF4A596B);
@@ -807,8 +806,8 @@ public final class VartaPackIssuesScreen extends Screen {
         int textX = x + 10;
         int textWidth = Math.max(12, width - 18);
         String title = "Profile " + vm.packStatus().displayName().toUpperCase();
-        g.text(this.font, trim(title, textWidth), textX, y + 6,
-                VartaUiLayout.textColor(colorForStatus(vm.packStatus())), true);
+        g.drawString(this.font, trim(title, textWidth), textX, y + 6,
+                VartaUiLayout.textColor(colorForStatus(vm.packStatus())));
 
         List<String> statusLines = switch (vm.packStatus()) {
             case CLEAN -> List.of("No blocking issues detected.");
@@ -824,14 +823,14 @@ public final class VartaPackIssuesScreen extends Screen {
             }
             List<String> wrappedLines = wrap(line, textWidth, remainingLines);
             for (String wrapped : wrappedLines) {
-                g.text(this.font, wrapped, textX, lineY, VartaUiLayout.textColor(0xFFD9E2EC), true);
+                g.drawString(this.font, wrapped, textX, lineY, VartaUiLayout.textColor(0xFFD9E2EC));
                 lineY += 10;
                 remainingLines--;
             }
         }
     }
 
-    private void renderStatusBlock(GuiGraphicsExtractor g) {
+    private void renderStatusBlock(GuiGraphics g) {
         int x = actionStatusX;
         int y = actionStatusY;
         int width = actionStatusWidth;
@@ -842,7 +841,7 @@ public final class VartaPackIssuesScreen extends Screen {
         g.fill(x, y, x + width, y + 1, 0xFF4A596B);
     }
 
-    private void renderActionStatusText(GuiGraphicsExtractor g) {
+    private void renderActionStatusText(GuiGraphics g) {
         if (actionStatusHeight <= 0 || actionStatusBlockHeight <= 0) {
             return;
         }
@@ -856,7 +855,7 @@ public final class VartaPackIssuesScreen extends Screen {
         String title = statusHeight < 38 && vm.packStatus() == PackStatus.BROKEN
             ? "BROKEN - fix errors"
             : vm.packStatus() == PackStatus.BROKEN ? "Profile BROKEN" : "Fix required";
-        g.text(this.font, trim(title, textWidth), x + 10, y + 6, VartaUiLayout.textColor(0xFFFF7777), true);
+        g.drawString(this.font, trim(title, textWidth), x + 10, y + 6, VartaUiLayout.textColor(0xFFFF7777));
 
         if (statusHeight >= 38) {
             String line = VartaPack.shouldBlockContinue()
@@ -864,34 +863,34 @@ public final class VartaPackIssuesScreen extends Screen {
                     : "ERROR/CRITICAL issues need attention.";
             int lineY = y + 19;
             for (String wrapped : wrap(line, textWidth, 2)) {
-                g.text(this.font, wrapped, x + 10, lineY, VartaUiLayout.textColor(0xFFD9E2EC), true);
+                g.drawString(this.font, wrapped, x + 10, lineY, VartaUiLayout.textColor(0xFFD9E2EC));
                 lineY += 10;
             }
         }
     }
 
-    private void renderActionWidgets(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
-        g.enableScissor(actionX, actionButtonTop, actionX + actionWidth, actionButtonBottom);
-        super.extractRenderState(g, mouseX, mouseY, partialTick);
-        g.disableScissor();
+    private void renderActionWidgets(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        VartaScissor.enable(actionX, actionButtonTop, actionX + actionWidth, actionButtonBottom);
+        super.render(g, mouseX, mouseY, partialTick);
+        VartaScissor.disable();
     }
 
     private boolean shouldShowStatusBlock() {
         return vm.packStatus() == PackStatus.BROKEN;
     }
 
-    private void renderIssueList(GuiGraphicsExtractor g) {
+    private void renderIssueList(GuiGraphics g) {
         List<IssueViewModel.Row> rows = vm.rows();
         if (rows.isEmpty()) {
-            g.enableScissor(listX - 2, listTop, listX + listWidth + 2, listBottom);
-            g.centeredText(this.font,
-                    Component.translatable(CommonTexts.NO_VISIBLE_ISSUES),
+            VartaScissor.enable(listX - 2, listTop, listX + listWidth + 2, listBottom);
+            g.drawCenteredString(this.font,
+                    VartaComponents.translatable(CommonTexts.NO_VISIBLE_ISSUES),
                     listX + listWidth / 2, listTop + 18, VartaUiLayout.textColor(0xFFFFFF));
-            g.disableScissor();
+            VartaScissor.disable();
             return;
         }
 
-        g.enableScissor(listX - 2, listTop, listX + listWidth + 2, listBottom);
+        VartaScissor.enable(listX - 2, listTop, listX + listWidth + 2, listBottom);
 
         int y = listTop - issueScroll;
         for (IssueViewModel.Row row : rows) {
@@ -902,7 +901,7 @@ public final class VartaPackIssuesScreen extends Screen {
             y += rowHeight + cardGap();
         }
 
-        g.disableScissor();
+        VartaScissor.disable();
 
         if (maxIssueScroll > 0 && listBottom > listTop) {
             int viewportHeight = listBottom - listTop;
@@ -914,7 +913,7 @@ public final class VartaPackIssuesScreen extends Screen {
         }
     }
 
-    private void renderIssueCard(GuiGraphicsExtractor g, IssueViewModel.Row row, int y, int rowHeight) {
+    private void renderIssueCard(GuiGraphics g, IssueViewModel.Row row, int y, int rowHeight) {
         int color = colorFor(row.severity());
         int padding = cardPadding();
         int innerX = listX + padding;
@@ -932,20 +931,20 @@ public final class VartaPackIssuesScreen extends Screen {
         int badgeWidth = Math.min(this.font.width(severity) + 12, textWidth);
         g.fill(innerX, lineY, innerX + badgeWidth, lineY + 14, 0xFF202633);
         g.fill(innerX, lineY + 13, innerX + badgeWidth, lineY + 14, 0xFF000000 | color);
-        g.text(this.font, trim(severity, Math.max(10, badgeWidth - 12)), innerX + 6, lineY + 3,
-                VartaUiLayout.textColor(color), true);
+        g.drawString(this.font, trim(severity, Math.max(10, badgeWidth - 12)), innerX + 6, lineY + 3,
+                VartaUiLayout.textColor(color));
 
         if (stackedHeader) {
             lineY += 18;
             for (String line : wrap(row.title(), textWidth, maxTitleLines())) {
-                g.text(this.font, line, innerX, lineY, VartaUiLayout.textColor(0xFFFFFF), true);
+                g.drawString(this.font, line, innerX, lineY, VartaUiLayout.textColor(0xFFFFFF));
                 lineY += 10;
             }
         } else {
             int titleX = innerX + badgeWidth + 8;
             int titleWidth = Math.max(40, innerRight - titleX);
             for (String line : wrap(row.title(), titleWidth, maxTitleLines())) {
-                g.text(this.font, line, titleX, lineY + 3, VartaUiLayout.textColor(0xFFFFFF), true);
+                g.drawString(this.font, line, titleX, lineY + 3, VartaUiLayout.textColor(0xFFFFFF));
                 lineY += 10;
             }
             lineY = Math.max(lineY, y + padding + 18);
@@ -962,20 +961,20 @@ public final class VartaPackIssuesScreen extends Screen {
         if (row.fix() != null && !row.fix().isBlank()) {
             lineY += 2;
             String prefix = "-> Fix: ";
-            g.text(this.font, prefix, innerX, lineY, VartaUiLayout.textColor(0x88DDFF), true);
+            g.drawString(this.font, prefix, innerX, lineY, VartaUiLayout.textColor(0x88DDFF));
             int prefixWidth = this.font.width(prefix);
             List<String> lines = wrap(row.fix(), Math.max(40, textWidth - prefixWidth), maxFixLines());
             for (int i = 0; i < lines.size(); i++) {
                 int x = i == 0 ? innerX + prefixWidth : innerX;
-                g.text(this.font, lines.get(i), x, lineY, VartaUiLayout.textColor(0x88DDFF), true);
+                g.drawString(this.font, lines.get(i), x, lineY, VartaUiLayout.textColor(0x88DDFF));
                 lineY += 10;
             }
         }
     }
 
-    private int drawWrapped(GuiGraphicsExtractor g, String text, int x, int y, int wrapWidth, int maxLines, int color) {
+    private int drawWrapped(GuiGraphics g, String text, int x, int y, int wrapWidth, int maxLines, int color) {
         for (String line : wrap(text, wrapWidth, maxLines)) {
-            g.text(this.font, line, x, y, VartaUiLayout.textColor(color), true);
+            g.drawString(this.font, line, x, y, VartaUiLayout.textColor(color));
             y += 10;
         }
         return y;
@@ -1063,9 +1062,7 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        double mouseX = event.x();
-        double mouseY = event.y();
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (layoutMode == VartaLayoutMode.NARROW && mouseY >= tabY && mouseY <= tabY + tabHeight) {
             if (mouseX >= issuesTabX && mouseX <= issuesTabX + tabWidth) {
                 narrowTab = NarrowTab.ISSUES;
@@ -1079,17 +1076,15 @@ public final class VartaPackIssuesScreen extends Screen {
             }
         }
         if (isActionPaneVisible() && isInsideActionButtons(mouseX, mouseY)) {
-            return super.mouseClicked(event, doubleClick);
+            return super.mouseClicked(mouseX, mouseY, button);
         }
         return false;
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        double mouseX = event.x();
-        double mouseY = event.y();
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (isActionPaneVisible() && isInsideActionButtons(mouseX, mouseY)) {
-            return super.mouseReleased(event);
+            return super.mouseReleased(mouseX, mouseY, button);
         }
         return false;
     }
@@ -1143,8 +1138,8 @@ public final class VartaPackIssuesScreen extends Screen {
         if (VartaPack.shouldBlockContinue()) {
             VartaPackToast.show(
                     Minecraft.getInstance(),
-                    Component.translatable(CommonTexts.TOAST_TITLE),
-                    Component.translatable(CommonTexts.CONTINUE_BLOCKED),
+                    VartaComponents.translatable(CommonTexts.TOAST_TITLE),
+                    VartaComponents.translatable(CommonTexts.CONTINUE_BLOCKED),
                     Severity.ERROR);
             return;
         }

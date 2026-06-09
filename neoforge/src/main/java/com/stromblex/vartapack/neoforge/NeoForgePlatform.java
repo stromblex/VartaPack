@@ -26,21 +26,18 @@ public final class NeoForgePlatform implements Platform {
             if (c.isPresent()) return c.get().getModInfo().getVersion().toString();
         }
         try {
-            FMLLoader loader = FMLLoader.getCurrentOrNull();
-            if (loader != null) return loader.getVersionInfo().neoForgeVersion();
+            return FMLLoader.versionInfo().neoForgeVersion();
         }
         catch (Throwable t) { return "unknown"; }
-        return "unknown";
     }
 
     @Override
     public String getMinecraftVersion() {
         try {
-            FMLLoader loader = FMLLoader.getCurrentOrNull();
-            if (loader != null) return loader.getVersionInfo().mcVersion();
+            return FMLLoader.versionInfo().mcVersion();
         }
         catch (Throwable ignored) { }
-        try { return SharedConstants.getCurrentVersion().id(); }
+        try { return SharedConstants.getCurrentVersion().getName(); }
         catch (Throwable t) { return "unknown"; }
     }
 
@@ -79,5 +76,5 @@ public final class NeoForgePlatform implements Platform {
         });
     }
 
-    @Override public boolean isClientEnvironment() { return FMLEnvironment.getDist().isClient(); }
+    @Override public boolean isClientEnvironment() { return FMLEnvironment.dist.isClient(); }
 }

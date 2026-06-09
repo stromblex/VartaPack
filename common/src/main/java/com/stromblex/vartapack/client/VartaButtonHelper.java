@@ -17,11 +17,11 @@ public final class VartaButtonHelper {
         }
         for (String label : compactLabels) {
             if (font.width(label) <= textWidth) {
-                return Component.literal(label);
+                return VartaComponents.literal(label);
             }
         }
         String fallback = compactLabels.length == 0 ? normalText : compactLabels[compactLabels.length - 1];
-        return Component.literal(VartaTextWrapHelper.trim(font, fallback, textWidth));
+        return VartaComponents.literal(VartaTextWrapHelper.trim(font, fallback, textWidth));
     }
 
     public static Component fittingLabel(Font font, int buttonWidth, Component normal, List<String> compactLabels) {

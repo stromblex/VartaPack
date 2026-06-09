@@ -4,16 +4,16 @@ import com.stromblex.vartapack.VartaPack;
 import com.stromblex.vartapack.check.Severity;
 import com.stromblex.vartapack.client.VartaPackIssuesScreen;
 import com.stromblex.vartapack.client.VartaPackToast;
+import com.stromblex.vartapack.client.VartaComponents;
 import com.stromblex.vartapack.ui.CommonTexts;
 import com.stromblex.vartapack.ui.IssueViewModel;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
@@ -24,8 +24,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     private boolean startupDone = false;
     private boolean wasMouseDown = false;
     private boolean wasKeyDown = false;
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
+    private static final String KEY_CATEGORY = "key.categories.vartapack.main";
 
     private KeyMapping openKey;
 
@@ -33,7 +32,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         VartaPack.init(platform);
 
-        openKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        openKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 CommonTexts.KEY_OPEN_SCREEN,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
@@ -47,7 +46,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
         if (mc.getWindow() == null) return;
 
         if (!startupDone) {
-            if (mc.screen == null && mc.level == null) return;
+            if (!(mc.screen instanceof TitleScreen)) return;
             startupDone = true;
             if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
@@ -72,8 +71,8 @@ public final class VartaPackFabricClient implements ClientModInitializer {
             IssueViewModel vm = IssueViewModel.build();
             String keyName = openKey.getTranslatedKeyMessage().getString();
             VartaPackToast.show(mc,
-                    Component.translatable(CommonTexts.TOAST_TITLE),
-                    Component.translatable(CommonTexts.TOAST_ISSUES_SHORT, vm.rows().size(), keyName),
+                    VartaComponents.translatable(CommonTexts.TOAST_TITLE),
+                    VartaComponents.translatable(CommonTexts.TOAST_ISSUES_SHORT, vm.rows().size(), keyName),
                     hasErrors ? Severity.ERROR : Severity.WARNING);
         }
     }
@@ -95,15 +94,28 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     }
 
     private void handleKeybind(Minecraft mc) {
-        int keyCode = KeyMappingHelper.getBoundKeyOf(openKey).getValue();
-        boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
-        if (keyDown && !wasKeyDown) {
-            if (!(mc.screen instanceof VartaPackIssuesScreen)
-                    && !(mc.screen != null && mc.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox)) {
+        boolean consumed = false;
+        while (openKey.consumeClick()) {
+            consumed = true;
+            if (canOpenIssuesScreen(mc)) {
                 openIssuesScreen(mc);
             }
         }
+        if (consumed) {
+            wasKeyDown = true;
+            return;
+        }
+
+        int keyCode = KeyBindingHelper.getBoundKeyOf(openKey).getValue();
+        boolean keyDown = InputConstants.isKeyDown(mc.getWindow().getWindow(), keyCode);
+        if (keyDown && !wasKeyDown && canOpenIssuesScreen(mc)) {
+            openIssuesScreen(mc);
+        }
         wasKeyDown = keyDown;
+    }
+
+    private boolean canOpenIssuesScreen(Minecraft mc) {
+        return mc.screen instanceof TitleScreen;
     }
 
     private void openIssuesScreen(Minecraft mc) {
@@ -121,11 +133,11 @@ public final class VartaPackFabricClient implements ClientModInitializer {
             return;
         }
 
-        if (!VartaPackToast.isToastVisible()) {
+        if (!VartaPackToast.isToastVisible() || !canOpenIssuesScreen(mc)) {
             wasMouseDown = false;
             return;
         }
-        long windowHandle = mc.getWindow().handle();
+        long windowHandle = mc.getWindow().getWindow();
         boolean mouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
         if (mouseDown && !wasMouseDown) {
             double rawX = mc.mouseHandler.xpos();

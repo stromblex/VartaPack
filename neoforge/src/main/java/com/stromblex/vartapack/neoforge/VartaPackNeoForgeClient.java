@@ -4,14 +4,13 @@ import com.stromblex.vartapack.VartaPack;
 import com.stromblex.vartapack.check.Severity;
 import com.stromblex.vartapack.client.VartaPackIssuesScreen;
 import com.stromblex.vartapack.client.VartaPackToast;
+import com.stromblex.vartapack.client.VartaComponents;
 import com.stromblex.vartapack.ui.CommonTexts;
 import com.stromblex.vartapack.ui.IssueViewModel;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,8 +27,7 @@ public final class VartaPackNeoForgeClient {
     private static boolean wasMouseDown = false;
     private static boolean wasKeyDown = false;
     private static final NeoForgeClipboardService CLIPBOARD = new NeoForgeClipboardService();
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
+    private static final String KEY_CATEGORY = "key.categories.vartapack.main";
 
     private static KeyMapping openKey;
 
@@ -55,7 +53,7 @@ public final class VartaPackNeoForgeClient {
         if (mc == null || mc.getWindow() == null) return;
 
         if (!startupDone) {
-            if (mc.screen == null && mc.level == null) return;
+            if (!(mc.screen instanceof TitleScreen)) return;
             startupDone = true;
             if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
@@ -80,8 +78,8 @@ public final class VartaPackNeoForgeClient {
             IssueViewModel vm = IssueViewModel.build();
             String keyName = openKey.getTranslatedKeyMessage().getString();
             VartaPackToast.show(mc,
-                    Component.translatable(CommonTexts.TOAST_TITLE),
-                    Component.translatable(CommonTexts.TOAST_ISSUES_SHORT, vm.rows().size(), keyName),
+                    VartaComponents.translatable(CommonTexts.TOAST_TITLE),
+                    VartaComponents.translatable(CommonTexts.TOAST_ISSUES_SHORT, vm.rows().size(), keyName),
                     hasErrors ? Severity.ERROR : Severity.WARNING);
         }
     }
@@ -103,15 +101,28 @@ public final class VartaPackNeoForgeClient {
     }
 
     private static void handleKeybind(Minecraft mc) {
-        int keyCode = openKey.getKey().getValue();
-        boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
-        if (keyDown && !wasKeyDown) {
-            if (!(mc.screen instanceof VartaPackIssuesScreen)
-                    && !(mc.screen != null && mc.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox)) {
+        boolean consumed = false;
+        while (openKey.consumeClick()) {
+            consumed = true;
+            if (canOpenIssuesScreen(mc)) {
                 openIssuesScreen(mc);
             }
         }
+        if (consumed) {
+            wasKeyDown = true;
+            return;
+        }
+
+        int keyCode = openKey.getKey().getValue();
+        boolean keyDown = InputConstants.isKeyDown(mc.getWindow().getWindow(), keyCode);
+        if (keyDown && !wasKeyDown && canOpenIssuesScreen(mc)) {
+            openIssuesScreen(mc);
+        }
         wasKeyDown = keyDown;
+    }
+
+    private static boolean canOpenIssuesScreen(Minecraft mc) {
+        return mc.screen instanceof TitleScreen;
     }
 
     private static void openIssuesScreen(Minecraft mc) {
@@ -129,11 +140,11 @@ public final class VartaPackNeoForgeClient {
             return;
         }
 
-        if (!VartaPackToast.isToastVisible()) {
+        if (!VartaPackToast.isToastVisible() || !canOpenIssuesScreen(mc)) {
             wasMouseDown = false;
             return;
         }
-        long windowHandle = mc.getWindow().handle();
+        long windowHandle = mc.getWindow().getWindow();
         boolean mouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
         if (mouseDown && !wasMouseDown) {
             double rawX = mc.mouseHandler.xpos();
