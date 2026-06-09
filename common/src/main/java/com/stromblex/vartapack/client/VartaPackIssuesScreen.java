@@ -556,7 +556,7 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g) {
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
@@ -1090,7 +1090,7 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double deltaY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         if (isIssuePaneVisible() && isInsideList(mouseX, mouseY)) {
             issueScroll = VartaUiLayout.clamp(issueScroll - (int) (deltaY * 18), 0, maxIssueScroll);
             return true;
@@ -1100,7 +1100,7 @@ public final class VartaPackIssuesScreen extends Screen {
             rebuildActionWidgets();
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, deltaY);
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     private boolean isIssuePaneVisible() {

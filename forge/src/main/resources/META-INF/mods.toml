@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[49,)"
 license = "MIT"
 issueTrackerURL = "https://github.com/stromblex/VartaPack/issues"
 
@@ -17,7 +17,7 @@ displayURL = "https://github.com/stromblex/VartaPack"
 [[dependencies.vartapack]]
 modId = "forge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[49,)"
 ordering = "NONE"
 side = "CLIENT"
 

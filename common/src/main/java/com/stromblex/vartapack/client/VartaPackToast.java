@@ -20,9 +20,9 @@ public final class VartaPackToast {
     public static void show(Minecraft mc, Component title, Component message, Severity severity) {
         if (mc == null || mc.getToasts() == null) return;
         try {
-            SystemToast.SystemToastIds id = switch (severity) {
-                case CRITICAL, ERROR -> SystemToast.SystemToastIds.WORLD_BACKUP;
-                case WARNING, INFO -> SystemToast.SystemToastIds.PERIODIC_NOTIFICATION;
+            SystemToast.SystemToastId id = switch (severity) {
+                case CRITICAL, ERROR -> SystemToast.SystemToastId.WORLD_BACKUP;
+                case WARNING, INFO -> SystemToast.SystemToastId.PERIODIC_NOTIFICATION;
             };
             SystemToast.addOrUpdate(mc.getToasts(), id, title, message);
             visibleUntil = System.currentTimeMillis() + TOAST_DURATION_MS;

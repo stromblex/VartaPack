@@ -178,7 +178,7 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics g) {
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
@@ -237,12 +237,12 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double deltaY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         if (scrollArea.contains(mouseX, mouseY) && scrollArea.scrollBy(deltaY)) {
             rebuildResponsiveWidgets();
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, deltaY);
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     @Override
