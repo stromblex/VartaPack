@@ -1,6 +1,6 @@
 package com.stromblex.vartapack.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -28,7 +28,7 @@ public final class VartaPackButton extends Button {
 
     public VartaPackButton(int x, int y, int width, int height, Component message,
                            OnPress onPress, Style style) {
-        super(x, y, width, height, message, onPress);
+        super(x, y, width, height, message, onPress, Button.DEFAULT_NARRATION);
         this.style = style;
     }
 
@@ -38,23 +38,25 @@ public final class VartaPackButton extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack g, int mouseX, int mouseY, float partialTick) {
+    protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         Style resolved = this.active ? style : Style.DISABLED;
         int fill = this.isHoveredOrFocused() && this.active ? resolved.hover : resolved.base;
         int border = this.isHoveredOrFocused() && this.active ? 0xFF9DB9D8 : 0xFF3A4351;
+        int x = getX();
+        int y = getY();
         int right = x + width;
         int bottom = y + height;
 
-        fill(g, x, y, right, bottom, 0xFF0D1016);
-        fill(g, x + 1, y + 1, right - 1, bottom - 1, fill);
-        fill(g, x, y, right, y + 1, border);
-        fill(g, x, bottom - 1, right, bottom, 0xFF11151C);
-        fill(g, x, y, x + 1, bottom, border);
-        fill(g, right - 1, y, right, bottom, 0xFF11151C);
+        g.fill(x, y, right, bottom, 0xFF0D1016);
+        g.fill(x + 1, y + 1, right - 1, bottom - 1, fill);
+        g.fill(x, y, right, y + 1, border);
+        g.fill(x, bottom - 1, right, bottom, 0xFF11151C);
+        g.fill(x, y, x + 1, bottom, border);
+        g.fill(right - 1, y, right, bottom, 0xFF11151C);
 
         int textColor = this.active ? resolved.text : Style.DISABLED.text;
         Component message = getMessage().copy().withStyle(s -> s.withColor(textColor & 0xFFFFFF));
-        drawCenteredString(g, Minecraft.getInstance().font,
+        g.drawCenteredString(Minecraft.getInstance().font,
                 VartaTextWrapHelper.trim(Minecraft.getInstance().font, message.getString(), width - 10),
                 x + width / 2, y + (height - 8) / 2, textColor);
     }

@@ -7,7 +7,7 @@ import com.stromblex.vartapack.config.ConfigManager;
 import com.stromblex.vartapack.config.VartaConfig;
 import com.stromblex.vartapack.ui.CommonTexts;
 import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -290,39 +290,39 @@ public final class VartaPackConfigScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(PoseStack g) {
+    public void renderBackground(GuiGraphics g) {
     }
 
     @Override
-    public void render(PoseStack g, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         renderBase(g);
         renderSections(g);
         scrollArea.renderScrollbar(g);
         super.render(g, mouseX, mouseY, partialTick);
     }
 
-    private void renderBase(PoseStack g) {
-        fill(g, 0, 0, width, height, 0xFF05070B);
-        fill(g, 0, 0, width, height, 0xFF0B1018);
-        fill(g, 0, 0, width, 1, 0xFF566477);
-        fill(g, 0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
-        drawCenteredString(g, this.font, VartaComponents.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8,
+    private void renderBase(GuiGraphics g) {
+        g.fill(0, 0, width, height, 0xFF05070B);
+        g.fill(0, 0, width, height, 0xFF0B1018);
+        g.fill(0, 0, width, 1, 0xFF566477);
+        g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
+        g.drawCenteredString(this.font, VartaComponents.translatable(CommonTexts.CONFIG_TITLE), width / 2, 8,
                 VartaUiLayout.textColor(0xFFFFFF));
-        drawCenteredString(g, this.font, VartaComponents.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22,
+        g.drawCenteredString(this.font, VartaComponents.translatable(CommonTexts.CONFIG_SUBTITLE), width / 2, 22,
                 VartaUiLayout.textColor(0xD4DCE8));
-        fill(g, 0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
+        g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
     }
 
-    private void renderSections(PoseStack g) {
+    private void renderSections(GuiGraphics g) {
         scrollArea.enableScissor(g);
         int scroll = scrollArea.scroll();
         for (SectionLayout layout : sectionLayouts) {
             VartaRect bounds = layout.bounds();
             int x = bounds.x();
             int y = bounds.y() - scroll;
-            fill(g, x, y, x + bounds.width(), y + bounds.height(), 0xFF101722);
-            fill(g, x, y, x + bounds.width(), y + 1, 0xFF566477);
-            drawString(g, this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
+            g.fill(x, y, x + bounds.width(), y + bounds.height(), 0xFF101722);
+            g.fill(x, y, x + bounds.width(), y + 1, 0xFF566477);
+            g.drawString(this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
                     x + SECTION_PADDING, y + 7, VartaUiLayout.textColor(0xFFFFFF));
         }
         VartaScissor.disable();

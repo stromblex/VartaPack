@@ -1,7 +1,6 @@
 package com.stromblex.vartapack.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 
 public final class VartaScrollArea {
     private VartaRect bounds;
@@ -46,11 +45,11 @@ public final class VartaScrollArea {
         return bounds.contains(mouseX, mouseY);
     }
 
-    public void enableScissor(PoseStack graphics) {
+    public void enableScissor(GuiGraphics graphics) {
         VartaScissor.enable(bounds.x(), bounds.y(), bounds.right(), bounds.bottom());
     }
 
-    public void renderScrollbar(PoseStack graphics) {
+    public void renderScrollbar(GuiGraphics graphics) {
         int maxScroll = maxScroll();
         if (maxScroll <= 0 || bounds.height() <= 0) {
             return;
@@ -58,7 +57,7 @@ public final class VartaScrollArea {
         int barHeight = Math.max(10, bounds.height() * bounds.height() / (maxScroll + bounds.height()));
         int barY = bounds.y() + (int) ((float) scroll / maxScroll * (bounds.height() - barHeight));
         int x = bounds.right() - 3;
-        GuiComponent.fill(graphics, x, bounds.y(), x + 2, bounds.bottom(), 0xFF1B222D);
-        GuiComponent.fill(graphics, x, barY, x + 2, barY + barHeight, 0xFF7E93AD);
+        graphics.fill(x, bounds.y(), x + 2, bounds.bottom(), 0xFF1B222D);
+        graphics.fill(x, barY, x + 2, barY + barHeight, 0xFF7E93AD);
     }
 }

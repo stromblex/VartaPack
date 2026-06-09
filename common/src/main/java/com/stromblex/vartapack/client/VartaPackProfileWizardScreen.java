@@ -8,7 +8,7 @@ import com.stromblex.vartapack.config.ConfigManager;
 import com.stromblex.vartapack.config.PackProfile;
 import com.stromblex.vartapack.ui.CommonTexts;
 import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -178,30 +178,30 @@ public final class VartaPackProfileWizardScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(PoseStack g) {
+    public void renderBackground(GuiGraphics g) {
     }
 
     @Override
-    public void render(PoseStack g, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         renderBase(g);
         renderContent(g);
         scrollArea.renderScrollbar(g);
         super.render(g, mouseX, mouseY, partialTick);
     }
 
-    private void renderBase(PoseStack g) {
-        fill(g, 0, 0, width, height, 0xFF05070B);
-        fill(g, 0, 0, width, height, 0xFF0B1018);
-        fill(g, 0, 0, width, 1, 0xFF566477);
-        fill(g, 0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
-        drawCenteredString(g, this.font, VartaComponents.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8,
+    private void renderBase(GuiGraphics g) {
+        g.fill(0, 0, width, height, 0xFF05070B);
+        g.fill(0, 0, width, height, 0xFF0B1018);
+        g.fill(0, 0, width, 1, 0xFF566477);
+        g.fill(0, metrics.headerHeight() - 6, width, metrics.headerHeight() - 5, 0xFF334050);
+        g.drawCenteredString(this.font, VartaComponents.translatable(CommonTexts.PROFILE_WIZARD_TITLE), width / 2, 8,
                 VartaUiLayout.textColor(0xFFFFFF));
-        drawCenteredString(g, this.font, VartaComponents.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22,
+        g.drawCenteredString(this.font, VartaComponents.translatable(CommonTexts.PROFILE_WIZARD_SUBTITLE), width / 2, 22,
                 VartaUiLayout.textColor(0xD4DCE8));
-        fill(g, 0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
+        g.fill(0, bottomBounds.y() - metrics.gap() / 2, width, bottomBounds.y() - metrics.gap() / 2 + 1, 0xFF252D38);
     }
 
-    private void renderContent(PoseStack g) {
+    private void renderContent(GuiGraphics g) {
         scrollArea.enableScissor(g);
         int scroll = scrollArea.scroll();
         int row = metrics.mode() == VartaLayoutMode.NARROW ? FIELD_ROW_NARROW : FIELD_ROW_NORMAL;
@@ -218,21 +218,21 @@ public final class VartaPackProfileWizardScreen extends Screen {
         int textWidth = Math.max(40, contentBounds.width() - 28 - VartaUiLayout.SCROLLBAR_GUTTER);
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 VartaComponents.translatable(CommonTexts.PROFILE_SCAN_SUMMARY, allowedMods.size()).getString(), textWidth, 2)) {
-            drawString(g, this.font, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF));
+            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF));
             infoY += 10;
         }
         infoY += 4;
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 VartaComponents.translatable(CommonTexts.PROFILE_SCAN_HINT).getString(), textWidth, 3)) {
-            drawString(g, this.font, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8));
+            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8));
             infoY += 10;
         }
         VartaScissor.disable();
     }
 
-    private void drawLabel(PoseStack g, String key, int x, int y, int width) {
+    private void drawLabel(GuiGraphics g, String key, int x, int y, int width) {
         int labelY = metrics.mode() == VartaLayoutMode.NARROW ? y : y + 6;
-        drawString(g, this.font, VartaTextWrapHelper.trim(this.font, VartaComponents.translatable(key).getString(), width),
+        g.drawString(this.font, VartaTextWrapHelper.trim(this.font, VartaComponents.translatable(key).getString(), width),
                 x, labelY, VartaUiLayout.textColor(0xFFFFFF));
     }
 
