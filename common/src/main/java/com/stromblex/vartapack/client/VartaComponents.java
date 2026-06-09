@@ -1,22 +1,21 @@
 package com.stromblex.vartapack.client;
 
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public final class VartaComponents {
     private VartaComponents() {
     }
 
     public static MutableComponent empty() {
-        return new TextComponent("");
+        return Component.empty();
     }
 
     public static MutableComponent literal(String text) {
-        return new TextComponent(text);
+        return Component.literal(text);
     }
 
     public static MutableComponent translatable(String key, Object... args) {
-        return new TranslatableComponent(key, args);
+        return Component.translatable(key, args);
     }
 }

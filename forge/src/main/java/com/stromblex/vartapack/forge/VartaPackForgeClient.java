@@ -12,9 +12,10 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
 
@@ -31,15 +32,19 @@ public final class VartaPackForgeClient {
     private VartaPackForgeClient() {
     }
 
-    public static void init() {
+    public static void init(IEventBus modBus) {
         openKey = new KeyMapping(
                 CommonTexts.KEY_OPEN_SCREEN,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
                 KEY_CATEGORY
         );
-        ClientRegistry.registerKeyBinding(openKey);
+        modBus.addListener(VartaPackForgeClient::registerKeyMappings);
         MinecraftForge.EVENT_BUS.register(VartaPackForgeClient.class);
+    }
+
+    private static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        event.register(openKey);
     }
 
     @SubscribeEvent
