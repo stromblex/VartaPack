@@ -19,6 +19,7 @@ import java.util.Locale;
 
 public final class VartaPackProfileWizardScreen extends Screen {
     private static final int BOTTOM_ACTION_HEIGHT = 34;
+    private static final int BOTTOM_CONTENT_GAP = 18;
     private static final int FIELD_ROW_NORMAL = 28;
     private static final int FIELD_ROW_NARROW = 42;
 
@@ -58,9 +59,12 @@ public final class VartaPackProfileWizardScreen extends Screen {
         metrics = VartaUiLayout.metrics(width, height);
         frameBounds = metrics.frame();
         int bottomReserved = bottomActionReservedHeight();
-        contentBounds = metrics.contentBounds(bottomReserved + metrics.gap());
-        bottomBounds = new VartaRect(frameBounds.x(), Math.max(contentBounds.bottom() + metrics.gap(), height - metrics.margin() - bottomReserved),
-                frameBounds.width(), bottomReserved);
+        int contentY = frameBounds.y() + metrics.headerHeight() + metrics.margin();
+        int bottomY = Math.max(contentY + 1, height - metrics.margin() - bottomReserved);
+        int contentBottom = Math.max(contentY + 1, bottomY - BOTTOM_CONTENT_GAP);
+        contentBounds = new VartaRect(frameBounds.x() + metrics.margin(), contentY,
+                Math.max(1, frameBounds.width() - metrics.margin() * 2), contentBottom - contentY);
+        bottomBounds = new VartaRect(frameBounds.x(), bottomY, frameBounds.width(), bottomReserved);
     }
 
     private int bottomActionReservedHeight() {
@@ -218,22 +222,29 @@ public final class VartaPackProfileWizardScreen extends Screen {
         int textWidth = Math.max(40, contentBounds.width() - 28 - VartaUiLayout.SCROLLBAR_GUTTER);
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 VartaComponents.translatable(CommonTexts.PROFILE_SCAN_SUMMARY, allowedMods.size()).getString(), textWidth, 2)) {
-            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF));
+            drawVisibleLine(g, line, x, infoY, VartaUiLayout.textColor(0xFFFFFF));
             infoY += 10;
         }
         infoY += 4;
         for (String line : VartaTextWrapHelper.wrap(this.font,
                 VartaComponents.translatable(CommonTexts.PROFILE_SCAN_HINT).getString(), textWidth, 3)) {
-            g.drawString(this.font, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8));
+            drawVisibleLine(g, line, x, infoY, VartaUiLayout.textColor(0xD4DCE8));
             infoY += 10;
         }
-        VartaScissor.disable();
+        VartaScissor.disable(g);
     }
 
     private void drawLabel(GuiGraphics g, String key, int x, int y, int width) {
         int labelY = metrics.mode() == VartaLayoutMode.NARROW ? y : y + 6;
-        g.drawString(this.font, VartaTextWrapHelper.trim(this.font, VartaComponents.translatable(key).getString(), width),
+        drawVisibleLine(g, VartaTextWrapHelper.trim(this.font, VartaComponents.translatable(key).getString(), width),
                 x, labelY, VartaUiLayout.textColor(0xFFFFFF));
+    }
+
+    private void drawVisibleLine(GuiGraphics g, String text, int x, int y, int color) {
+        if (y < contentBounds.y() || y + this.font.lineHeight > contentBounds.bottom()) {
+            return;
+        }
+        g.drawString(this.font, text, x, y, color);
     }
 
     @Override

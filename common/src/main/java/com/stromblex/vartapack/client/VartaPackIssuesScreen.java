@@ -76,6 +76,9 @@ public final class VartaPackIssuesScreen extends Screen {
     private int issuesTabX;
     private int actionsTabX;
     private int tabWidth;
+    private int lastLayoutWidth = -1;
+    private int lastLayoutHeight = -1;
+    private VartaLayoutMode lastLayoutMode;
 
     public VartaPackIssuesScreen(Screen parent, IssueViewModel vm, ClipboardService clipboard) {
         super(VartaComponents.translatable(CommonTexts.SCREEN_TITLE));
@@ -89,6 +92,7 @@ public final class VartaPackIssuesScreen extends Screen {
         clearWidgets();
         List<ActionSpec> actions = buildActions();
         layoutMetrics();
+        resetScrollAfterResize();
 
         int viewportHeight = Math.max(1, listBottom - listTop);
         maxIssueScroll = Math.max(0, computeIssueContentHeight() - viewportHeight);
@@ -97,6 +101,19 @@ public final class VartaPackIssuesScreen extends Screen {
         if (layoutMode != VartaLayoutMode.NARROW || narrowTab == NarrowTab.ACTIONS) {
             addActionButtons(actions);
         }
+    }
+
+    private void resetScrollAfterResize() {
+        boolean initialized = lastLayoutWidth >= 0 && lastLayoutHeight >= 0 && lastLayoutMode != null;
+        boolean changed = initialized
+                && (lastLayoutWidth != width || lastLayoutHeight != height || lastLayoutMode != layoutMode);
+        if (changed) {
+            issueScroll = 0;
+            actionScroll = 0;
+        }
+        lastLayoutWidth = width;
+        lastLayoutHeight = height;
+        lastLayoutMode = layoutMode;
     }
 
     private List<ActionSpec> buildActions() {
@@ -256,13 +273,17 @@ public final class VartaPackIssuesScreen extends Screen {
     private VartaRect getContentBounds() {
         int y = headerBottom + edgePadding;
         if (layoutMode == VartaLayoutMode.NARROW) {
-            y += tabHeight + Math.max(4, edgePadding / 2);
+            y += tabHeight + narrowTabContentGap();
         }
         int minimumHeight = shouldShowStatusBlock()
                 ? 26 + getActionStatusHeight() + buttonHeight() + 4
                 : 70;
         int bottom = Math.max(y + minimumHeight, height - edgePadding);
         return new VartaRect(contentX, y, contentWidth, bottom - y);
+    }
+
+    private int narrowTabContentGap() {
+        return Math.max(10, edgePadding + 4);
     }
 
     private VartaRect getIssueListBounds() {
@@ -475,7 +496,7 @@ public final class VartaPackIssuesScreen extends Screen {
 
     private void addActionButton(ActionSpec spec, int x, int y, int width, int height) {
         VartaPackButton button = VartaPackButton.of(x, y, width, height, actionLabel(spec, width), spec.onPress(), spec.style());
-        button.visible = y + height > actionButtonTop && y < actionButtonBottom;
+        button.visible = y >= actionButtonTop && y + height <= actionButtonBottom;
         button.active = button.visible;
         this.addRenderableWidget(button);
     }
@@ -576,7 +597,6 @@ public final class VartaPackIssuesScreen extends Screen {
 
         renderActionPanel(g);
         renderIssueList(g);
-        renderActionStatusText(g);
         renderActionWidgets(g, mouseX, mouseY, partialTick);
     }
 
@@ -647,7 +667,7 @@ public final class VartaPackIssuesScreen extends Screen {
     private void renderNarrowTabs(GuiGraphics g) {
         drawTab(g, issuesTabX, tabY, tabWidth, "Issues", narrowTab == NarrowTab.ISSUES);
         drawTab(g, actionsTabX, tabY, tabWidth, "Actions", narrowTab == NarrowTab.ACTIONS);
-        int dividerY = tabY + tabHeight + Math.max(3, edgePadding / 3);
+        int dividerY = tabY + tabHeight + Math.max(4, narrowTabContentGap() / 2);
         g.fill(0, dividerY, width, dividerY + 1, 0xFF334050);
         g.fill(contentX, contentY - 1, contentX + contentWidth, contentY, 0xFF151D29);
     }
@@ -705,6 +725,7 @@ public final class VartaPackIssuesScreen extends Screen {
         g.drawString(this.font, "Actions", actionX + actionPadding(), actionTop + 4, VartaUiLayout.textColor(0xB8C2D0));
         if (actionStatusHeight > 0) {
             renderStatusBlock(g);
+            renderActionStatusText(g);
         }
 
         if (maxActionScroll > 0 && actionButtonBottom > actionButtonTop) {
@@ -718,7 +739,7 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     private void renderNarrowActionPanel(GuiGraphics g) {
-        VartaScissor.enable(actionX, actionTop, actionX + actionWidth, actionBottom);
+        VartaScissor.enable(g, actionX, actionTop, actionX + actionWidth, actionBottom);
 
         int padding = narrowActionPadding();
         int buttonWidth = narrowActionButtonWidth();
@@ -728,7 +749,7 @@ public final class VartaPackIssuesScreen extends Screen {
                 : actionX + (actionWidth - buttonWidth) / 2;
         int y = actionTop + 4 - actionScroll;
 
-        g.drawString(this.font, "Actions", actionX + padding, y, VartaUiLayout.textColor(0xB8C2D0));
+        drawActionLine(g, "Actions", actionX + padding, y, VartaUiLayout.textColor(0xB8C2D0));
         if (horizontal) {
             int statusX = actionX + padding;
             int statusY = actionTop + 20 - actionScroll;
@@ -743,7 +764,7 @@ public final class VartaPackIssuesScreen extends Screen {
             renderNarrowActionGroupLabels(g, buttonX, statusY + narrowStatusHeight(false) + ACTION_GROUP_GAP + 12, buttonWidth);
         }
 
-        VartaScissor.disable();
+        VartaScissor.disable(g);
 
         if (maxActionScroll > 0 && actionBottom > actionTop) {
             int viewportHeight = actionBottom - actionTop;
@@ -767,7 +788,7 @@ public final class VartaPackIssuesScreen extends Screen {
         if (!present) {
             return y;
         }
-        g.drawString(this.font, trim(label, width), x, y, VartaUiLayout.textColor(0x8FA1B8));
+        drawActionLine(g, trim(label, width), x, y, VartaUiLayout.textColor(0x8FA1B8));
         int count = label.equals("Reports") ? actionCount(ActionKind.COPY_REPORT, ActionKind.COPY_JSON)
                 : label.equals("Files") ? actionCount(ActionKind.OPEN_DIR, ActionKind.OPEN_SUPPORT)
                 : actionCount(ActionKind.CONTINUE, ActionKind.SETTINGS);
@@ -799,14 +820,14 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     private void renderNarrowStatusBlock(GuiGraphics g, int x, int y, int width, int height) {
-        g.fill(x, y, x + width, y + height, 0xFF171E2A);
-        g.fill(x, y, x + 3, y + height, 0xFF000000 | colorForStatus(vm.packStatus()));
-        g.fill(x, y, x + width, y + 1, 0xFF4A596B);
+        fillActionRect(g, x, y, x + width, y + height, 0xFF171E2A);
+        fillActionRect(g, x, y, x + 3, y + height, 0xFF000000 | colorForStatus(vm.packStatus()));
+        fillActionRect(g, x, y, x + width, y + 1, 0xFF4A596B);
 
         int textX = x + 10;
         int textWidth = Math.max(12, width - 18);
         String title = "Profile " + vm.packStatus().displayName().toUpperCase();
-        g.drawString(this.font, trim(title, textWidth), textX, y + 6,
+        drawActionLine(g, trim(title, textWidth), textX, y + 6,
                 VartaUiLayout.textColor(colorForStatus(vm.packStatus())));
 
         List<String> statusLines = switch (vm.packStatus()) {
@@ -823,11 +844,27 @@ public final class VartaPackIssuesScreen extends Screen {
             }
             List<String> wrappedLines = wrap(line, textWidth, remainingLines);
             for (String wrapped : wrappedLines) {
-                g.drawString(this.font, wrapped, textX, lineY, VartaUiLayout.textColor(0xFFD9E2EC));
+                drawActionLine(g, wrapped, textX, lineY, VartaUiLayout.textColor(0xFFD9E2EC));
                 lineY += 10;
                 remainingLines--;
             }
         }
+    }
+
+    private void fillActionRect(GuiGraphics g, int x, int y, int right, int bottom, int color) {
+        int visibleY = Math.max(y, actionTop);
+        int visibleBottom = Math.min(bottom, actionBottom);
+        if (visibleBottom <= visibleY) {
+            return;
+        }
+        g.fill(x, visibleY, right, visibleBottom, color);
+    }
+
+    private void drawActionLine(GuiGraphics g, String text, int x, int y, int color) {
+        if (y < actionTop || y + this.font.lineHeight > actionBottom) {
+            return;
+        }
+        g.drawString(this.font, text, x, y, color);
     }
 
     private void renderStatusBlock(GuiGraphics g) {
@@ -870,9 +907,9 @@ public final class VartaPackIssuesScreen extends Screen {
     }
 
     private void renderActionWidgets(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        VartaScissor.enable(actionX, actionButtonTop, actionX + actionWidth, actionButtonBottom);
+        VartaScissor.enable(g, actionX, actionButtonTop, actionX + actionWidth, actionButtonBottom);
         super.render(g, mouseX, mouseY, partialTick);
-        VartaScissor.disable();
+        VartaScissor.disable(g);
     }
 
     private boolean shouldShowStatusBlock() {
@@ -882,15 +919,15 @@ public final class VartaPackIssuesScreen extends Screen {
     private void renderIssueList(GuiGraphics g) {
         List<IssueViewModel.Row> rows = vm.rows();
         if (rows.isEmpty()) {
-            VartaScissor.enable(listX - 2, listTop, listX + listWidth + 2, listBottom);
+            VartaScissor.enable(g, listX - 2, listTop, listX + listWidth + 2, listBottom);
             g.drawCenteredString(this.font,
                     VartaComponents.translatable(CommonTexts.NO_VISIBLE_ISSUES),
                     listX + listWidth / 2, listTop + 18, VartaUiLayout.textColor(0xFFFFFF));
-            VartaScissor.disable();
+            VartaScissor.disable(g);
             return;
         }
 
-        VartaScissor.enable(listX - 2, listTop, listX + listWidth + 2, listBottom);
+        VartaScissor.enable(g, listX - 2, listTop, listX + listWidth + 2, listBottom);
 
         int y = listTop - issueScroll;
         for (IssueViewModel.Row row : rows) {
@@ -901,7 +938,7 @@ public final class VartaPackIssuesScreen extends Screen {
             y += rowHeight + cardGap();
         }
 
-        VartaScissor.disable();
+        VartaScissor.disable(g);
 
         if (maxIssueScroll > 0 && listBottom > listTop) {
             int viewportHeight = listBottom - listTop;

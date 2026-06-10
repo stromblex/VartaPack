@@ -46,7 +46,7 @@ public final class VartaScrollArea {
     }
 
     public void enableScissor(GuiGraphics graphics) {
-        VartaScissor.enable(bounds.x(), bounds.y(), bounds.right(), bounds.bottom());
+        VartaScissor.enable(graphics, bounds.x(), bounds.y(), bounds.right(), bounds.bottom());
     }
 
     public void renderScrollbar(GuiGraphics graphics) {

@@ -3,23 +3,23 @@
     "project_id": "C1UZdEDT",
     "loaders_fabric": ["fabric"],
     "loaders_neoforge": ["neoforge"],
-    "game_versions": ["1.21.1"],
-    "version_type": "release",
+    "game_versions": ["1.21.4"],
+    "version_type": "beta",
     "featured": true,
     "client_side": "required",
     "server_side": "unsupported"
   },
   "curseforge": {
     "project_id": "1552180",
-    "game_versions": [11779, 11135],
+    "game_versions": [12281, 11135],
     "environment": [9638],
     "loaders_fabric": [7499],
     "loaders_neoforge": [10150],
-    "release_type": "release"
+    "release_type": "beta"
   },
   "jar_paths": {
     "fabric": "fabric/build/libs/vartapack-fabric-mc{mc_version}-{version}.jar",
     "neoforge": "neoforge/build/libs/vartapack-neoforge-mc{mc_version}-{version}.jar"
   },
-  "mc_version": "1.21.1"
+  "mc_version": "1.21.4"
 }

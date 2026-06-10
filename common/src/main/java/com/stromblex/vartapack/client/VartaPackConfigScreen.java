@@ -325,7 +325,7 @@ public final class VartaPackConfigScreen extends Screen {
             g.drawString(this.font, VartaTextWrapHelper.trim(this.font, layout.section().title(), bounds.width() - SECTION_PADDING * 2),
                     x + SECTION_PADDING, y + 7, VartaUiLayout.textColor(0xFFFFFF));
         }
-        VartaScissor.disable();
+        VartaScissor.disable(g);
     }
 
     @Override
