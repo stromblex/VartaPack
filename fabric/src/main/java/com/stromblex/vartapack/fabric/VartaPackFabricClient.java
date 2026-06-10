@@ -47,7 +47,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
         if (mc.getWindow() == null) return;
 
         if (!startupDone) {
-            if (mc.screen == null && mc.level == null) return;
+            if (!(mc.screen instanceof TitleScreen)) return;
             startupDone = true;
             if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
@@ -97,13 +97,14 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     private void handleKeybind(Minecraft mc) {
         int keyCode = KeyMappingHelper.getBoundKeyOf(openKey).getValue();
         boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
-        if (keyDown && !wasKeyDown) {
-            if (!(mc.screen instanceof VartaPackIssuesScreen)
-                    && !(mc.screen != null && mc.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox)) {
-                openIssuesScreen(mc);
-            }
+        if (keyDown && !wasKeyDown && canOpenIssuesScreen(mc)) {
+            openIssuesScreen(mc);
         }
         wasKeyDown = keyDown;
+    }
+
+    private boolean canOpenIssuesScreen(Minecraft mc) {
+        return mc.screen instanceof TitleScreen;
     }
 
     private void openIssuesScreen(Minecraft mc) {
@@ -121,7 +122,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
             return;
         }
 
-        if (!VartaPackToast.isToastVisible()) {
+        if (!VartaPackToast.isToastVisible() || !canOpenIssuesScreen(mc)) {
             wasMouseDown = false;
             return;
         }

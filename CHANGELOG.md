@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3
+
+* Added the current 1.1.3 fixes to the Minecraft 26.1 release line.
+* Limited the VartaPack keybind and startup toast actions to the main menu.
+* Prevented the issues screen from opening over gameplay, inventory, chat, and other mod screens.
+* Marked the 26.1 release artifacts as beta while keeping the mod version at 1.1.3.
+* No config changes are required.
+
 ## 1.1.3-mc1.20.1
 
 * Added support for Minecraft 1.20.1.

@@ -55,7 +55,7 @@ public final class VartaPackNeoForgeClient {
         if (mc == null || mc.getWindow() == null) return;
 
         if (!startupDone) {
-            if (mc.screen == null && mc.level == null) return;
+            if (!(mc.screen instanceof TitleScreen)) return;
             startupDone = true;
             if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
@@ -105,13 +105,14 @@ public final class VartaPackNeoForgeClient {
     private static void handleKeybind(Minecraft mc) {
         int keyCode = openKey.getKey().getValue();
         boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
-        if (keyDown && !wasKeyDown) {
-            if (!(mc.screen instanceof VartaPackIssuesScreen)
-                    && !(mc.screen != null && mc.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox)) {
-                openIssuesScreen(mc);
-            }
+        if (keyDown && !wasKeyDown && canOpenIssuesScreen(mc)) {
+            openIssuesScreen(mc);
         }
         wasKeyDown = keyDown;
+    }
+
+    private static boolean canOpenIssuesScreen(Minecraft mc) {
+        return mc.screen instanceof TitleScreen;
     }
 
     private static void openIssuesScreen(Minecraft mc) {
@@ -129,7 +130,7 @@ public final class VartaPackNeoForgeClient {
             return;
         }
 
-        if (!VartaPackToast.isToastVisible()) {
+        if (!VartaPackToast.isToastVisible() || !canOpenIssuesScreen(mc)) {
             wasMouseDown = false;
             return;
         }

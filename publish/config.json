@@ -4,7 +4,7 @@
     "loaders_fabric": ["fabric"],
     "loaders_neoforge": ["neoforge"],
     "game_versions": ["26.1", "26.1.1", "26.1.2"],
-    "version_type": "release",
+    "version_type": "beta",
     "featured": true,
     "client_side": "required",
     "server_side": "unsupported"
@@ -15,11 +15,11 @@
     "environment": [9638],
     "loaders_fabric": [7499],
     "loaders_neoforge": [10150],
-    "release_type": "release"
+    "release_type": "beta"
   },
   "jar_paths": {
-    "fabric": "fabric/build/libs/vartapack-fabric-mc{mc_version}-{version}.jar",
-    "neoforge": "neoforge/build/libs/vartapack-neoforge-mc{mc_version}-{version}.jar"
+    "fabric": "fabric/build/libs/vartapack-fabric-mc{mc_version}-{version}-beta.jar",
+    "neoforge": "neoforge/build/libs/vartapack-neoforge-mc{mc_version}-{version}-beta.jar"
   },
   "mc_version": "26.1"
 }
