@@ -11,6 +11,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,7 +28,8 @@ public final class VartaPackNeoForgeClient {
     private static boolean wasMouseDown = false;
     private static boolean wasKeyDown = false;
     private static final NeoForgeClipboardService CLIPBOARD = new NeoForgeClipboardService();
-    private static final String KEY_CATEGORY = "key.categories.vartapack.main";
+    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
 
     private static KeyMapping openKey;
 
@@ -114,7 +116,7 @@ public final class VartaPackNeoForgeClient {
         }
 
         int keyCode = openKey.getKey().getValue();
-        boolean keyDown = InputConstants.isKeyDown(mc.getWindow().getWindow(), keyCode);
+        boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
         if (keyDown && !wasKeyDown && canOpenIssuesScreen(mc)) {
             openIssuesScreen(mc);
         }
@@ -144,7 +146,7 @@ public final class VartaPackNeoForgeClient {
             wasMouseDown = false;
             return;
         }
-        long windowHandle = mc.getWindow().getWindow();
+        long windowHandle = mc.getWindow().handle();
         boolean mouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
         if (mouseDown && !wasMouseDown) {
             double rawX = mc.mouseHandler.xpos();

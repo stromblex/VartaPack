@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
@@ -24,7 +24,8 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     private boolean startupDone = false;
     private boolean wasMouseDown = false;
     private boolean wasKeyDown = false;
-    private static final String KEY_CATEGORY = "key.categories.vartapack.main";
+    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath(VartaPack.MOD_ID, "main"));
 
     private KeyMapping openKey;
 
@@ -107,7 +108,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
         }
 
         int keyCode = KeyBindingHelper.getBoundKeyOf(openKey).getValue();
-        boolean keyDown = InputConstants.isKeyDown(mc.getWindow().getWindow(), keyCode);
+        boolean keyDown = InputConstants.isKeyDown(mc.getWindow(), keyCode);
         if (keyDown && !wasKeyDown && canOpenIssuesScreen(mc)) {
             openIssuesScreen(mc);
         }
@@ -137,7 +138,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
             wasMouseDown = false;
             return;
         }
-        long windowHandle = mc.getWindow().getWindow();
+        long windowHandle = mc.getWindow().handle();
         boolean mouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
         if (mouseDown && !wasMouseDown) {
             double rawX = mc.mouseHandler.xpos();

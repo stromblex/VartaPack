@@ -17,7 +17,7 @@ displayURL = "https://github.com/stromblex/VartaPack"
 [[dependencies.vartapack]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.8,)"
+versionRange = "[21.11,)"
 ordering = "NONE"
 side = "CLIENT"
 
