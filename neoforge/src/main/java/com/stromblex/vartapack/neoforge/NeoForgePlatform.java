@@ -37,8 +37,17 @@ public final class NeoForgePlatform implements Platform {
             return FMLLoader.versionInfo().mcVersion();
         }
         catch (Throwable ignored) { }
-        try { return SharedConstants.getCurrentVersion().getName(); }
+        try {
+            Object version = SharedConstants.getCurrentVersion();
+            for (String method : List.of("id", "getName")) {
+                try {
+                    return String.valueOf(version.getClass().getMethod(method).invoke(version));
+                } catch (ReflectiveOperationException ignored) {
+                }
+            }
+        }
         catch (Throwable t) { return "unknown"; }
+        return "unknown";
     }
 
     @Override public Path getGameDirectory() { return FMLPaths.GAMEDIR.get(); }
