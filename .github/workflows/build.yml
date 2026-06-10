@@ -1,7 +1,7 @@
 name: Build VartaPack
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, 'mc/**']
     tags: ['v*']
   pull_request:
   workflow_dispatch:
