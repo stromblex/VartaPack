@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.1.3
+
+* Added the current 1.1.3 fixes to the Minecraft 26.1 release line.
+* Limited the VartaPack keybind and startup toast actions to the main menu.
+* Prevented the issues screen from opening over gameplay, inventory, chat, and other mod screens.
+* Marked the 26.1 release artifacts as beta while keeping the mod version at 1.1.3.
+* No config changes are required.
+
+## 1.1.3-mc1.21.11
+
+* Added support for Minecraft 1.21.11.
+* Updated Fabric and NeoForge release metadata for the 1.21.11 backport line.
+* Updated internal loader dependencies for Minecraft 1.21.11.
+* Rebuilt the current keybind, startup screen, UI background, clipping, and resize fixes for Minecraft 1.21.11.
+* No config changes are required.
+
+## 1.1.3-mc1.21.8
+
+* Added support for Minecraft 1.21.8.
+* Updated Fabric and NeoForge release metadata for the 1.21.8 backport line.
+* Updated internal loader dependencies for Minecraft 1.21.8.
+* Rebuilt the current keybind, startup screen, UI background, clipping, and resize fixes for Minecraft 1.21.8.
+* No config changes are required.
+
 ## 1.1.3-mc1.21.4
 
 * Added support for Minecraft 1.21.4.
