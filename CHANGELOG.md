@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.3
+## 1.1.3-mc26.1.x
 
 * Added the current 1.1.3 fixes to the Minecraft 26.1 release line.
 * Limited the VartaPack keybind and startup toast actions to the main menu.
