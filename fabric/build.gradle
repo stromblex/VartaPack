@@ -33,17 +33,13 @@ processResources {
     }
 }
 
-def jarVersionLabel = rootProject.hasProperty('mc_label')
-        ? "mc${rootProject.mc_label}-${project.version}-beta"
-        : "mc${rootProject.minecraft_version}-${project.version}-beta"
-
 jar {
     archiveBaseName = "${rootProject.archives_base_name}-fabric"
     archiveAppendix = ''
-    archiveVersion = jarVersionLabel
+    archiveVersion = project.version
 }
 
 sourcesJar {
     archiveBaseName = "${rootProject.archives_base_name}-fabric"
-    archiveVersion = jarVersionLabel
+    archiveVersion = project.version
 }
