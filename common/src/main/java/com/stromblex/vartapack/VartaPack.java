@@ -111,6 +111,10 @@ public final class VartaPack {
     public static CrashAnalysisResult lastCrashAnalysis() { return lastCrashAnalysis; }
 
     public static boolean hasIssuesAtLeast(Severity min) {
+        ValidationResult validation = lastValidation;
+        if (validation != null) {
+            return validation.highestSeverity().ordinal() >= min.ordinal();
+        }
         for (CheckResult r : lastResults) {
             if (r.severity().ordinal() >= min.ordinal()) return true;
         }
@@ -118,9 +122,10 @@ public final class VartaPack {
     }
 
     public static boolean shouldBlockContinue() {
-        return config.enabled()
-                && hasIssuesAtLeast(Severity.ERROR)
-                && (config.strictMode() || !config.allowContinueAnyway());
+        if (!config.enabled() || !hasIssuesAtLeast(Severity.ERROR)) return false;
+        ValidationResult validation = lastValidation;
+        if (validation != null && validation.hasBlockingIssues()) return true;
+        return config.strictMode() || !config.allowContinueAnyway();
     }
 
     public static boolean isScreenShownThisSession() { return screenShownThisSession; }
