@@ -179,7 +179,7 @@ public final class VartaPackConfigScreen extends Screen {
                     refreshWidgets();
                 }),
                 buttonRow(Component.translatable(CommonTexts.BTN_PROFILE_WIZARD), List.of("Wizard"), VartaPackButton.Style.SECONDARY,
-                        b -> Minecraft.getInstance().setScreen(new VartaPackProfileWizardScreen(this))),
+                        b -> Minecraft.getInstance().gui.setScreen(new VartaPackProfileWizardScreen(this))),
                 infoRow(Component.literal("Responsive UI"), List.of("UI"), "AUTO")
         )));
         return sections;
@@ -267,7 +267,7 @@ public final class VartaPackConfigScreen extends Screen {
         int backY = stack ? y + 28 : y;
         addRenderableWidget(VartaPackButton.of(backX, backY, buttonWidth, 24,
                 VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_BACK)),
-                b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
+                b -> Minecraft.getInstance().gui.setScreen(parent), VartaPackButton.Style.SECONDARY));
     }
 
     private VartaPackButton.Style severityStyle(Severity severity) {
@@ -281,7 +281,7 @@ public final class VartaPackConfigScreen extends Screen {
             new ConfigManager(VartaPack.platform().getGameDirectory()).saveVartaConfig(draft);
             VartaPack.reload();
         }
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
     private void refreshWidgets() {
@@ -339,7 +339,7 @@ public final class VartaPackConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
     private interface BooleanSetter { void set(boolean value); }

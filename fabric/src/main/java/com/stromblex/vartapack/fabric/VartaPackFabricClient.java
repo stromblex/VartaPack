@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -47,7 +48,7 @@ public final class VartaPackFabricClient implements ClientModInitializer {
         if (mc.getWindow() == null) return;
 
         if (!startupDone) {
-            if (!(mc.screen instanceof TitleScreen)) return;
+            if (!(currentScreen(mc) instanceof TitleScreen)) return;
             startupDone = true;
             if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
@@ -83,14 +84,14 @@ public final class VartaPackFabricClient implements ClientModInitializer {
                 || !VartaPack.hasIssuesAtLeast(Severity.ERROR)
                 || !VartaPack.config().enabled()
                 || !VartaPack.config().showScreenOnCriticalIssues()
-                || !(mc.screen instanceof TitleScreen)) {
+                || !(currentScreen(mc) instanceof TitleScreen)) {
             return false;
         }
 
         VartaPack.markScreenShown();
         VartaPackToast.dismiss();
         IssueViewModel vm = IssueViewModel.build();
-        mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, clipboard));
+        mc.gui.setScreen(new VartaPackIssuesScreen(currentScreen(mc), vm, clipboard));
         return true;
     }
 
@@ -104,19 +105,19 @@ public final class VartaPackFabricClient implements ClientModInitializer {
     }
 
     private boolean canOpenIssuesScreen(Minecraft mc) {
-        return mc.screen instanceof TitleScreen;
+        return currentScreen(mc) instanceof TitleScreen;
     }
 
     private void openIssuesScreen(Minecraft mc) {
-        if (mc.screen instanceof VartaPackIssuesScreen) return;
+        if (currentScreen(mc) instanceof VartaPackIssuesScreen) return;
 
         VartaPackToast.dismiss();
         IssueViewModel vm = IssueViewModel.build();
-        mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, clipboard));
+        mc.gui.setScreen(new VartaPackIssuesScreen(currentScreen(mc), vm, clipboard));
     }
 
     private void handleToastClick(Minecraft mc) {
-        if (mc.screen instanceof VartaPackIssuesScreen) {
+        if (currentScreen(mc) instanceof VartaPackIssuesScreen) {
             VartaPackToast.dismiss();
             wasMouseDown = false;
             return;
@@ -142,5 +143,9 @@ public final class VartaPackFabricClient implements ClientModInitializer {
             }
         }
         wasMouseDown = mouseDown;
+    }
+
+    private Screen currentScreen(Minecraft mc) {
+        return mc.gui.screen();
     }
 }

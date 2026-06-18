@@ -140,7 +140,7 @@ public final class VartaPackProfileWizardScreen extends Screen {
         );
         new ConfigManager(VartaPack.platform().getGameDirectory()).savePackProfile(generated);
         VartaPack.reload();
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
     private void addBottomButtons() {
@@ -169,7 +169,7 @@ public final class VartaPackProfileWizardScreen extends Screen {
         int backY = stack ? y + 56 : y;
         addRenderableWidget(VartaPackButton.of(backX, backY, buttonWidth, 24,
                 VartaButtonHelper.fittingLabel(this.font, buttonWidth, Component.translatable(CommonTexts.BTN_BACK)),
-                b -> Minecraft.getInstance().setScreen(parent), VartaPackButton.Style.SECONDARY));
+                b -> Minecraft.getInstance().gui.setScreen(parent), VartaPackButton.Style.SECONDARY));
     }
 
     private void rebuildResponsiveWidgets() {
@@ -247,6 +247,6 @@ public final class VartaPackProfileWizardScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 }

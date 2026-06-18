@@ -9,6 +9,7 @@ import com.stromblex.vartapack.ui.IssueViewModel;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -55,7 +56,7 @@ public final class VartaPackNeoForgeClient {
         if (mc == null || mc.getWindow() == null) return;
 
         if (!startupDone) {
-            if (!(mc.screen instanceof TitleScreen)) return;
+            if (!(currentScreen(mc) instanceof TitleScreen)) return;
             startupDone = true;
             if (tryOpenStartupIssuesScreen(mc)) return;
             handleStartupToast(mc);
@@ -91,14 +92,14 @@ public final class VartaPackNeoForgeClient {
                 || !VartaPack.hasIssuesAtLeast(Severity.ERROR)
                 || !VartaPack.config().enabled()
                 || !VartaPack.config().showScreenOnCriticalIssues()
-                || !(mc.screen instanceof TitleScreen)) {
+                || !(currentScreen(mc) instanceof TitleScreen)) {
             return false;
         }
 
         VartaPack.markScreenShown();
         VartaPackToast.dismiss();
         IssueViewModel vm = IssueViewModel.build();
-        mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, CLIPBOARD));
+        mc.gui.setScreen(new VartaPackIssuesScreen(currentScreen(mc), vm, CLIPBOARD));
         return true;
     }
 
@@ -112,19 +113,19 @@ public final class VartaPackNeoForgeClient {
     }
 
     private static boolean canOpenIssuesScreen(Minecraft mc) {
-        return mc.screen instanceof TitleScreen;
+        return currentScreen(mc) instanceof TitleScreen;
     }
 
     private static void openIssuesScreen(Minecraft mc) {
-        if (mc.screen instanceof VartaPackIssuesScreen) return;
+        if (currentScreen(mc) instanceof VartaPackIssuesScreen) return;
 
         VartaPackToast.dismiss();
         IssueViewModel vm = IssueViewModel.build();
-        mc.setScreen(new VartaPackIssuesScreen(mc.screen, vm, CLIPBOARD));
+        mc.gui.setScreen(new VartaPackIssuesScreen(currentScreen(mc), vm, CLIPBOARD));
     }
 
     private static void handleToastClick(Minecraft mc) {
-        if (mc.screen instanceof VartaPackIssuesScreen) {
+        if (currentScreen(mc) instanceof VartaPackIssuesScreen) {
             VartaPackToast.dismiss();
             wasMouseDown = false;
             return;
@@ -150,5 +151,9 @@ public final class VartaPackNeoForgeClient {
             }
         }
         wasMouseDown = mouseDown;
+    }
+
+    private static Screen currentScreen(Minecraft mc) {
+        return mc.gui.screen();
     }
 }

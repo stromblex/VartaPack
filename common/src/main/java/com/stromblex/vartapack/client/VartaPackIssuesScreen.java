@@ -142,7 +142,7 @@ public final class VartaPackIssuesScreen extends Screen {
 
         actions.add(new ActionSpec(ActionKind.SETTINGS,
                 Component.translatable(CommonTexts.BTN_SETTINGS),
-                b -> Minecraft.getInstance().setScreen(new VartaPackConfigScreen(this, clipboard)),
+                b -> Minecraft.getInstance().gui.setScreen(new VartaPackConfigScreen(this, clipboard)),
                 VartaPackButton.Style.SUBTLE));
 
         return actions;
@@ -1149,7 +1149,7 @@ public final class VartaPackIssuesScreen extends Screen {
             return;
         }
         VartaPack.markScreenShown();
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
     private record Counter(Severity severity, int count) {}
