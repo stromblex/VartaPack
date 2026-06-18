@@ -33,24 +33,13 @@ processResources {
     }
 }
 
-def mcVersionLabel = rootProject.hasProperty('mc_label')
-        ? rootProject.mc_label
-        : rootProject.minecraft_version
-def artifactSuffixName = rootProject.hasProperty('artifact_suffix')
-        ? rootProject.property('artifact_suffix').toString().trim()
-        : ''
-def artifactSuffix = artifactSuffixName
-        ? "-${artifactSuffixName}"
-        : ''
-def jarVersionLabel = "mc${mcVersionLabel}-${project.version}${artifactSuffix}"
-
 jar {
     archiveBaseName = "${rootProject.archives_base_name}-fabric"
     archiveAppendix = ''
-    archiveVersion = jarVersionLabel
+    archiveVersion = project.version
 }
 
 sourcesJar {
     archiveBaseName = "${rootProject.archives_base_name}-fabric"
-    archiveVersion = jarVersionLabel
+    archiveVersion = project.version
 }
